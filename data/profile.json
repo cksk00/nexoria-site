@@ -1,0 +1,109 @@
+{
+  "name": "r∅kta",
+  "age": "21",
+  "grade": "CS 2학년",
+  "org": "건국대학교 글로컬캠퍼스",
+  "specialty": "컴퓨터공학과",
+  "mbti": "INTJ",
+  "goal": "목표: 국가 보안",
+  "current": "👑",
+  "about": "보안 공부 중..\r\n서버는 계속 업데이트 될 예정입니다",
+  "stack_languages": [
+    "Python",
+    "C",
+    "JavaScript"
+  ],
+  "stack_security": [
+    "Cryptography",
+    "Web Hacking",
+    "Network",
+    "Pen-Testing",
+    "OSINT",
+    "Web3",
+    "Pwnable"
+  ],
+  "stack_tools": [
+    "Linux",
+    "Git",
+    "Wireshark",
+    "Burp Suite",
+    "Docker"
+  ],
+  "affiliation": [
+    "• 2025 ~ RubiyaLab Expeditions & Crypto",
+    "• 2026 ~ 건국대학교 글로컬 캠퍼스 보안 소모임 seKUrity 회장"
+  ],
+  "contact": [
+    {
+      "icon": "🧠",
+      "label": "Tistory",
+      "url": "https://fhrxklab.tistory.com/",
+      "sub": "╔═══*.·:·.✧ Write-Ups, Labs ✧.·:·.*═══╗"
+    },
+    {
+      "icon": "📧",
+      "label": "Email",
+      "url": "mailto:gozldgkwlak7070@gmail.com",
+      "sub": "╔═══*.·:·.✧  Send Inquiries  ✧.·:·.*═══╗"
+    },
+    {
+      "icon": "💬",
+      "label": "Discord",
+      "url": "https://discordapp.com/users/1311297725903671347",
+      "sub": "╔═══*.·:·.✧  Secure Comm.   ✧.·:·.*═══╗"
+    },
+    {
+      "icon": "🌙",
+      "label": "Instagram",
+      "url": "https://www.instagram.com/rk.o74.v?igsh=djB2bnc5Z3ZjaHZi&utm_source=qr",
+      "sub": "╔═══*.·:·.✧  Daily Account  ✧.·:·.*═══╗"
+    }
+  ],
+  "images": [
+    {
+      "filename": "8eef829e8b484f556216f3314b79e5b6.jpg",
+      "caption": "ㅇㅅaㅇ",
+      "date": "2026-05-07"
+    }
+  ],
+  "profile_image": "profile_pic.jpg",
+  "mood": "졸려요",
+  "location": "Chungju, Korea",
+  "now_working": "",
+  "skills": [
+    {
+      "name": "Cryptography",
+      "pct": 80
+    },
+    {
+      "name": "Web Hacking",
+      "pct": 65
+    },
+    {
+      "name": "Network Hacking",
+      "pct": 45
+    },
+    {
+      "name": "Web3",
+      "pct": 40
+    },
+    {
+      "name": "Pwnable",
+      "pct": 25
+    }
+  ],
+  "status_extra": [
+    {
+      "dot": "#FFC800",
+      "text": "연합 세미나 준비"
+    },
+    {
+      "dot": "#FFC800",
+      "text": "교내 세미나 준비"
+    },
+    {
+      "dot": "#FFC800",
+      "text": "NIAT 시험 준비"
+    }
+  ]
+}

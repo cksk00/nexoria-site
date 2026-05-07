@@ -1,0 +1,484 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --px:    'Press Start 2P', monospace;
+  --body:  'Pretendard', -apple-system, 'Noto Sans KR', sans-serif;
+  --bg:    #0a0a0a;
+  --hof:   #FFD700;
+  --global:#00BFFF;
+  --career:#32CD32;
+  --field: #DC143C;
+}
+
+body {
+  font-family: var(--body);
+  background: var(--bg);
+  background-image: radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 4px 4px;
+  min-height: 100vh;
+  color: #ccc;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Nav ── */
+#topnav {
+  background: linear-gradient(to bottom, #2a2a2a 0%, #0e0e0e 100%);
+  border-bottom: 2px solid #000;
+  padding: 0 16px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.8);
+}
+
+.nav-brand {
+  font-family: var(--px);
+  color: #e0e0e0;
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.nav-links { display: flex; gap: 4px; margin-left: auto; }
+
+.nav-links a {
+  font-family: var(--body);
+  color: #777;
+  font-size: 0.82rem;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 5px 12px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  transition: color 0.1s, border-color 0.1s;
+}
+
+.nav-links a:hover, .nav-links a.active {
+  color: #fff;
+  border-color: #444;
+  background: rgba(255,255,255,0.05);
+}
+
+/* ── Page header ── */
+#hof-page {
+  padding: 0 24px 80px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.hof-header {
+  text-align: center;
+  padding: 56px 0 44px;
+}
+
+.hof-title {
+  font-family: var(--px);
+  font-size: 1.2rem;
+  color: #e8e8e8;
+  letter-spacing: 6px;
+  margin-bottom: 16px;
+  text-shadow: 0 0 20px rgba(255,255,255,0.1);
+}
+
+.hof-sub {
+  font-family: var(--px);
+  font-size: 0.38rem;
+  color: #333;
+  letter-spacing: 3px;
+}
+
+/* ── Filter bar ── */
+.filter-bar {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 50px;
+}
+
+.filter-btn {
+  font-family: var(--body);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 7px 22px;
+  background: #111;
+  border: 1px solid #2a2a2a;
+  color: #555;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: all 0.15s;
+}
+
+.filter-btn:hover {
+  border-color: #444;
+  color: #aaa;
+}
+
+.filter-btn.active {
+  border-color: #666;
+  color: #e0e0e0;
+  background: #1e1e1e;
+}
+
+/* ── Category section ── */
+.cat-section { margin-bottom: 56px; }
+
+.cat-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 32px;
+}
+
+.cat-line {
+  flex: 1;
+  height: 1px;
+  opacity: 0.35;
+}
+
+.cat-name {
+  font-family: var(--px);
+  font-size: 0.45rem;
+  letter-spacing: 2px;
+  white-space: nowrap;
+}
+
+/* per-category colors */
+.cat-hof   .cat-line { background: var(--hof);    box-shadow: 0 0 6px var(--hof); }
+.cat-hof   .cat-name { color: var(--hof);          text-shadow: 0 0 10px var(--hof); }
+.cat-global .cat-line { background: var(--global); box-shadow: 0 0 6px var(--global); }
+.cat-global .cat-name { color: var(--global);      text-shadow: 0 0 10px var(--global); }
+.cat-career .cat-line { background: var(--career); box-shadow: 0 0 6px var(--career); }
+.cat-career .cat-name { color: var(--career);      text-shadow: 0 0 10px var(--career); }
+.cat-field  .cat-line { background: var(--field);  box-shadow: 0 0 6px var(--field); }
+.cat-field  .cat-name { color: var(--field);       text-shadow: 0 0 10px var(--field); }
+
+/* ── Badge grid ── */
+.badge-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+/* ── Badge hex ── */
+.badge-wrap {
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.15s;
+}
+
+.badge-wrap:hover { transform: translateY(-4px); }
+
+/* Glow: applied on outer wrap because clip-path clips box-shadow */
+.cat-hof   .badge-wrap:not(.locked) { filter: drop-shadow(0 0 8px rgba(255,215,0,0.7)); }
+.cat-global .badge-wrap:not(.locked){ filter: drop-shadow(0 0 8px rgba(0,191,255,0.7)); }
+.cat-career .badge-wrap:not(.locked){ filter: drop-shadow(0 0 8px rgba(50,205,50,0.7)); }
+.cat-field  .badge-wrap:not(.locked){ filter: drop-shadow(0 0 8px rgba(220,20,60,0.7)); }
+
+.badge-wrap.locked { opacity: 0.32; }
+.badge-wrap.locked:hover { opacity: 0.55; transform: none; }
+
+.badge-hex {
+  width: 140px;
+  height: 162px;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: filter 0.15s;
+}
+
+/* Category hex backgrounds */
+.cat-hof   .badge-hex { background: linear-gradient(160deg, #1e1800, #0d0d00); }
+.cat-global .badge-hex{ background: linear-gradient(160deg, #001a22, #000a11); }
+.cat-career .badge-hex{ background: linear-gradient(160deg, #001a00, #000d00); }
+.cat-field  .badge-hex{ background: linear-gradient(160deg, #1a0006, #0d0003); }
+
+/* Icon color */
+.cat-hof   .badge-icon { color: var(--hof); }
+.cat-global .badge-icon{ color: var(--global); }
+.cat-career .badge-icon{ color: var(--career); }
+.cat-field  .badge-icon{ color: var(--field); }
+
+.badge-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.badge-label {
+  font-family: var(--body);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 0 14px;
+  line-height: 1.3;
+  color: #ccc;
+}
+
+/* ── Popup (WinXP 미니 창) ── */
+.badge-popup {
+  position: fixed;
+  width: 240px;
+  z-index: 800;
+  background: #f0f0f0;
+  border: 2px solid;
+  border-color: #ddd #555 #555 #ddd;
+  box-shadow: 2px 2px 0 #fff inset, -1px -1px 0 #888 inset, 4px 4px 16px rgba(0,0,0,0.7);
+  pointer-events: none;
+  font-family: var(--body);
+}
+
+.badge-popup.hidden { display: none; }
+
+.popup-bar {
+  background: linear-gradient(to bottom, #555, #1e1e1e);
+  padding: 7px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.popup-title {
+  font-family: var(--px);
+  font-size: 0.38rem;
+  color: #e8e8e8;
+  letter-spacing: 1px;
+  line-height: 1.8;
+}
+
+.popup-btns { display: flex; gap: 3px; }
+
+.popup-btn {
+  font-family: var(--px);
+  width: 13px;
+  height: 13px;
+  background: #999;
+  border: 1px solid;
+  border-color: #ccc #555 #555 #ccc;
+  font-size: 0.32rem;
+  color: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.popup-btn.red { background: #888; }
+
+.popup-body {
+  padding: 12px 12px 14px;
+  position: relative;
+  background: #fff;
+  border-top: 1px solid #aaa;
+  min-height: 100px;
+}
+
+.popup-lock-wm {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.5rem;
+  opacity: 0.07;
+  pointer-events: none;
+  user-select: none;
+}
+
+.popup-badge-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 5px;
+}
+
+.popup-desc {
+  font-size: 0.75rem;
+  color: #555;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.popup-meta {
+  font-size: 0.72rem;
+  color: #777;
+  margin-bottom: 4px;
+  display: flex;
+  gap: 6px;
+}
+
+.popup-meta-label {
+  font-weight: 700;
+  color: #444;
+  white-space: nowrap;
+}
+
+.popup-condition {
+  font-size: 0.72rem;
+  color: #c00;
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+.popup-detail {
+  font-size: 0.75rem;
+  color: #555;
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+.popup-link {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 0.72rem;
+  color: #0057d8;
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+/* ── Taskbar ── */
+#taskbar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 38px;
+  background: linear-gradient(to bottom, #2a2a2a 0%, #0e0e0e 100%);
+  border-top: 2px solid #000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  z-index: 100;
+}
+
+.taskbar-start {
+  font-family: var(--px);
+  font-size: 0.44rem;
+  color: #e0e0e0;
+  letter-spacing: 1px;
+  border: 1px solid #444;
+  padding: 5px 12px;
+  background: #333;
+  cursor: default;
+}
+
+.taskbar-clock {
+  font-family: var(--px);
+  font-size: 0.4rem;
+  color: #888;
+  letter-spacing: 1px;
+}
+
+/* ── Edit 페이지 ── */
+.hof-edit-wrap {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 30px 24px 80px;
+}
+
+.hof-edit-title {
+  font-family: var(--px);
+  font-size: 0.6rem;
+  color: #e0e0e0;
+  letter-spacing: 3px;
+  margin-bottom: 30px;
+}
+
+.hof-edit-cat {
+  margin-bottom: 32px;
+}
+
+.hof-edit-cat-label {
+  font-family: var(--px);
+  font-size: 0.38rem;
+  letter-spacing: 2px;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #222;
+}
+
+.hof-edit-row {
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 2px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+}
+
+.hof-edit-row-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+
+.hof-edit-badge-name {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #ccc;
+  flex: 1;
+}
+
+.lock-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  color: #777;
+  cursor: pointer;
+  user-select: none;
+}
+
+.lock-toggle input[type=checkbox] { width: 14px; height: 14px; cursor: pointer; }
+
+.hof-edit-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.hof-edit-fields.full { grid-template-columns: 1fr; }
+
+.hof-edit-field label {
+  display: block;
+  font-size: 0.7rem;
+  color: #555;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.hof-edit-field input,
+.hof-edit-field textarea {
+  width: 100%;
+  background: #0d0d0d;
+  border: 1px solid #2a2a2a;
+  color: #aaa;
+  padding: 7px 10px;
+  font-family: var(--body);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.hof-edit-field textarea { min-height: 60px; resize: vertical; }
+
+.hof-save-btn {
+  font-family: var(--body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: #1e1e1e;
+  border: 1px solid #444;
+  color: #e0e0e0;
+  padding: 9px 28px;
+  cursor: pointer;
+  margin-top: 20px;
+  letter-spacing: 0.5px;
+}
+
+.hof-save-btn:hover { background: #2a2a2a; }

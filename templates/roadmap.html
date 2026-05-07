@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roadmap — NEXORIA_OS</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="roadmap-page">
+
+<nav id="topnav">
+  <a href="/" class="nav-brand">[NEXORIA_OS]</a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/hof">Hall of Fame</a>
+    <a href="/archive">Archive</a>
+    <a href="/roadmap" class="active">Roadmap</a>
+    <a href="/edit">✏ Edit</a>
+  </div>
+</nav>
+
+<div class="roadmap-wrap">
+
+  <div class="roadmap-hero">
+    <p class="roadmap-hero-eyebrow">[ NEXORIA_OS :: CAREER.LOG ]</p>
+    <h1 class="roadmap-hero-title">Road Map</h1>
+    <p class="roadmap-hero-sub">════*.·:·.✧ Security Career Progress ✧.·:·.*════</p>
+    <p class="roadmap-hero-hint">자물쇠 아이콘 클릭 → 잠금/해제 &nbsp;|&nbsp; 제목·설명 클릭 → 직접 수정</p>
+  </div>
+
+  {% for step in steps %}
+
+  <div class="win roadmap-step-win">
+    <div class="win-bar">
+      <span class="win-title">
+        <span class="step-num-badge" style="background:{{ step.color }};"></span>
+        Step {{ loop.index }}.
+      </span>
+      <div class="win-btns">
+        <span class="win-btn">─</span><span class="win-btn">□</span><span class="win-btn red">×</span>
+      </div>
+    </div>
+    <div class="win-body">
+      <div class="node-row">
+        {% for node in step.nodes %}
+        <div class="node-card {{ 'node-unlocked' if node.unlocked else 'node-locked' }}"
+             style="--step-color: {{ step.color }};"
+             data-step="{{ step.id }}"
+             data-node="{{ node.id }}">
+          <div class="node-lock-icon" onclick="toggleNode(this.closest('.node-card'))">{{ '◈' if node.unlocked else '✕' }}</div>
+          <div class="node-title"
+               contenteditable="true"
+               onblur="saveNode(this)"
+               onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">{{ node.title }}</div>
+          <div class="node-desc"
+               contenteditable="true"
+               onblur="saveNode(this)"
+               onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();this.blur();}">{{ node.desc }}</div>
+        </div>
+        {% if not loop.last %}
+        <div class="node-line"></div>
+        {% endif %}
+        {% endfor %}
+      </div>
+
+      <div class="add-node-wrap" data-step="{{ step.id }}" data-color="{{ step.color }}">
+        <button class="add-node-btn" onclick="toggleAddForm(this)">＋ 노드 추가</button>
+        <div class="add-node-form hidden">
+          <input class="edit-input" type="text" placeholder="노드 제목" data-role="new-title"
+                 onkeydown="if(event.key==='Enter')this.closest('.add-node-form').querySelector('[data-role=new-desc]').focus()">
+          <input class="edit-input" type="text" placeholder="설명 (선택사항)" data-role="new-desc"
+                 onkeydown="if(event.key==='Enter')submitAddNode(this.closest('.add-node-wrap'))">
+          <div style="display:flex;gap:6px;margin-top:6px;">
+            <button class="btn-px" onclick="submitAddNode(this.closest('.add-node-wrap'))">저장</button>
+            <button class="btn-px" onclick="closeAddForm(this)">취소</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if not loop.last %}
+  <div class="step-vconnector">
+    <div class="step-vline" style="background: linear-gradient(to bottom, {{ step.color }}, {{ steps[loop.index].color }});"></div>
+  </div>
+  {% endif %}
+
+  {% endfor %}
+
+</div>
+
+<div id="taskbar">
+  <div class="taskbar-clock" id="clock"></div>
+</div>
+
+<script>
+  function tick() {
+    const now = new Date();
+    document.getElementById('clock').textContent =
+      String(now.getHours()).padStart(2,'0') + ':' +
+      String(now.getMinutes()).padStart(2,'0');
+  }
+  tick();
+  setInterval(tick, 10000);
+
+  // 잠금/해제 토글
+  function toggleNode(card) {
+    const stepId = card.dataset.step;
+    const nodeId = card.dataset.node;
+    fetch(`/roadmap/toggle/${stepId}/${nodeId}`, { method: 'POST' })
+      .then(r => r.json())
+      .then(d => {
+        const icon = card.querySelector('.node-lock-icon');
+        if (d.unlocked) {
+          card.classList.remove('node-locked');
+          card.classList.add('node-unlocked');
+          icon.textContent = '◈';
+        } else {
+          card.classList.remove('node-unlocked');
+          card.classList.add('node-locked');
+          icon.textContent = '✕';
+        }
+      });
+  }
+
+  // 노드 내용 저장
+  function saveNode(el) {
+    const card = el.closest('.node-card');
+    const stepId = card.dataset.step;
+    const nodeId = card.dataset.node;
+    fetch(`/roadmap/update/${stepId}/${nodeId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: card.querySelector('.node-title').innerText.trim(),
+        desc:  card.querySelector('.node-desc').innerText.trim()
+      })
+    });
+  }
+
+  // 추가 폼 토글
+  function toggleAddForm(btn) {
+    const form = btn.nextElementSibling;
+    form.classList.toggle('hidden');
+    if (!form.classList.contains('hidden'))
+      form.querySelector('[data-role="new-title"]').focus();
+    else
+      btn.textContent = '＋ 노드 추가';
+  }
+
+  function closeAddForm(btn) {
+    const wrap = btn.closest('.add-node-wrap');
+    wrap.querySelector('.add-node-form').classList.add('hidden');
+    wrap.querySelector('[data-role="new-title"]').value = '';
+    wrap.querySelector('[data-role="new-desc"]').value = '';
+  }
+
+  // 노드 추가 저장
+  async function submitAddNode(wrap) {
+    const title = wrap.querySelector('[data-role="new-title"]').value.trim();
+    const desc  = wrap.querySelector('[data-role="new-desc"]').value.trim();
+    if (!title) { wrap.querySelector('[data-role="new-title"]').focus(); return; }
+
+    const stepId = wrap.dataset.step;
+    const color  = wrap.dataset.color;
+    const res  = await fetch(`/roadmap/add/${stepId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, desc })
+    });
+    const data = await res.json();
+    if (!data.ok) return;
+
+    // 노드 행에 구분선 + 새 카드 삽입
+    const row = wrap.closest('.win-body').querySelector('.node-row');
+    if (row.children.length > 0) {
+      const line = document.createElement('div');
+      line.className = 'node-line';
+      row.appendChild(line);
+    }
+
+    const card = document.createElement('div');
+    card.className = 'node-card node-locked';
+    card.style.setProperty('--step-color', color);
+    card.dataset.step = stepId;
+    card.dataset.node = data.id;
+    card.innerHTML = `
+      <div class="node-lock-icon" onclick="toggleNode(this.closest('.node-card'))">✕</div>
+      <div class="node-title" contenteditable="true"
+           onblur="saveNode(this)"
+           onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">${title}</div>
+      <div class="node-desc" contenteditable="true"
+           onblur="saveNode(this)"
+           onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();this.blur();}">${desc}</div>`;
+    row.appendChild(card);
+
+    closeAddForm(wrap.querySelector('.btn-px + .btn-px'));
+  }
+</script>
+</body>
+</html>

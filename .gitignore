@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.env
+*.egg-info/
+
+# Uploaded user files (re-upload after deploy)
+static/uploads/*
+!static/uploads/.gitkeep
+!static/uploads/archive/.gitkeep
+
+# macOS
+.DS_Store

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hall of Fame — NEXORIA_OS</title>
+  <link rel="stylesheet" href="/static/css/hof.css">
+</head>
+<body>
+
+<nav id="topnav">
+  <a href="/" class="nav-brand">[NEXORIA_OS]</a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/hof" class="active">Hall of Fame</a>
+    <a href="/archive">Archive</a>
+    <a href="/roadmap">Roadmap</a>
+    <a href="/hof/edit">✏ Edit HoF</a>
+  </div>
+</nav>
+
+<div id="hof-page">
+  <div class="hof-header">
+    <p class="hof-title">Hall of Fame</p>
+    <p class="hof-sub">Welcome to the Hall of Fame</p>
+  </div>
+
+  <!-- 필터 -->
+  <div class="filter-bar">
+    <button class="filter-btn active" data-filter="all">전체</button>
+    <button class="filter-btn" data-filter="unlocked">Unlocked</button>
+    <button class="filter-btn" data-filter="locked">Locked</button>
+  </div>
+
+  {% set categories = [
+    ('hof',    'HALL OF FAME',         '★ 레전드 업적'),
+    ('global', 'GLOBAL AGENT',         '🌐 언어 & 글로벌'),
+    ('career', 'CAREER : TARGET NIS',  '🎯 진로 & 국가 안보'),
+    ('field',  'FIELD OPERATIONS',     '⚡ 실무 & 해킹 역량')
+  ] %}
+
+  {% for cat_id, cat_name, cat_sub in categories %}
+  <section class="cat-section cat-{{ cat_id }}">
+    <div class="cat-header">
+      <div class="cat-line"></div>
+      <span class="cat-name">[ {{ cat_name }} ]</span>
+      <div class="cat-line"></div>
+    </div>
+    <div class="badge-grid">
+      {% for badge in badges %}
+      {% if badge.category == cat_id %}
+      <div class="badge-wrap {% if badge.locked %}locked{% endif %}"
+           data-locked="{{ '1' if badge.locked else '0' }}"
+           data-name="{{ badge.name }}"
+           data-desc="{{ badge.desc }}"
+           data-condition="{{ badge.unlock_condition }}"
+           data-date="{{ badge.date }}"
+           data-detail="{{ badge.detail }}"
+           data-link="{{ badge.link }}">
+        <div class="badge-hex">
+          <div class="badge-icon">{{ icons[badge.id] | safe }}</div>
+          <span class="badge-label">{{ badge.name }}</span>
+        </div>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+  {% endfor %}
+</div>
+
+<!-- 팝업 (WinXP 미니 창) -->
+<div id="badge-popup" class="badge-popup hidden">
+  <div class="popup-bar">
+    <span class="popup-title">▣ <span id="pop-title">badge.exe</span></span>
+    <div class="popup-btns">
+      <span class="popup-btn">─</span>
+      <span class="popup-btn red">×</span>
+    </div>
+  </div>
+  <div class="popup-body">
+    <div class="popup-lock-wm" id="pop-lockwm">🔒</div>
+    <p class="popup-badge-name" id="pop-name"></p>
+    <p class="popup-desc" id="pop-desc"></p>
+    <div class="popup-meta" id="pop-date-row" style="display:none;">
+      <span class="popup-meta-label">달성일</span>
+      <span id="pop-date"></span>
+    </div>
+    <p class="popup-condition" id="pop-condition" style="display:none;"></p>
+    <p class="popup-detail" id="pop-detail" style="display:none;"></p>
+    <a class="popup-link" id="pop-link" href="#" target="_blank" rel="noopener" style="display:none;"></a>
+  </div>
+</div>
+
+<div id="taskbar">
+  <div class="taskbar-clock" id="clock"></div>
+</div>
+
+<script>
+  // 시계
+  function tick() {
+    const now = new Date();
+    document.getElementById('clock').textContent =
+      String(now.getHours()).padStart(2,'0') + ':' +
+      String(now.getMinutes()).padStart(2,'0');
+  }
+  tick(); setInterval(tick, 10000);
+
+  // 날짜 포맷
+  function fmtDate(d) {
+    if (!d) return '';
+    const parts = d.split('-');
+    return parts[0] + '.' + parts[1] + '.' + parts[2];
+  }
+
+  // ── 팝업 ────────────────────────────────────
+  const popup  = document.getElementById('badge-popup');
+  const offset = 16;
+  let hideTimer;
+
+  function showPopup(e, el) {
+    clearTimeout(hideTimer);
+    const locked   = el.dataset.locked === '1';
+    const name     = el.dataset.name;
+    const desc     = el.dataset.desc;
+    const cond     = el.dataset.condition;
+    const date     = el.dataset.date;
+    const detail   = el.dataset.detail;
+    const link     = el.dataset.link;
+
+    document.getElementById('pop-title').textContent  = name;
+    document.getElementById('pop-name').textContent   = name;
+    document.getElementById('pop-desc').textContent   = desc;
+    document.getElementById('pop-lockwm').style.display = locked ? 'flex' : 'none';
+
+    const dateRow = document.getElementById('pop-date-row');
+    const dateTxt = document.getElementById('pop-date');
+    if (!locked && date) {
+      dateRow.style.display = 'flex';
+      dateTxt.textContent   = fmtDate(date);
+    } else { dateRow.style.display = 'none'; }
+
+    const condEl = document.getElementById('pop-condition');
+    if (locked && cond) {
+      condEl.textContent    = 'Unlock Condition: ' + cond;
+      condEl.style.display  = 'block';
+    } else { condEl.style.display = 'none'; }
+
+    const detailEl = document.getElementById('pop-detail');
+    if (detail) {
+      detailEl.textContent   = detail;
+      detailEl.style.display = 'block';
+    } else { detailEl.style.display = 'none'; }
+
+    const linkEl = document.getElementById('pop-link');
+    if (!locked && link) {
+      linkEl.href            = link;
+      linkEl.textContent     = link;
+      linkEl.style.display   = 'inline-block';
+    } else { linkEl.style.display = 'none'; }
+
+    popup.classList.remove('hidden');
+    positionPopup(e);
+  }
+
+  function positionPopup(e) {
+    const pw = popup.offsetWidth;
+    const ph = popup.offsetHeight;
+    let x = e.clientX + offset;
+    let y = e.clientY + offset;
+    if (x + pw > window.innerWidth  - 10) x = e.clientX - pw - offset;
+    if (y + ph > window.innerHeight - 10) y = e.clientY - ph - offset;
+    popup.style.left = x + 'px';
+    popup.style.top  = y + 'px';
+  }
+
+  function hidePopup() {
+    hideTimer = setTimeout(() => popup.classList.add('hidden'), 120);
+  }
+
+  // 각 뱃지에 이벤트 등록
+  document.querySelectorAll('.badge-wrap').forEach(el => {
+    el.addEventListener('mouseenter', e => showPopup(e, el));
+    el.addEventListener('mousemove',  e => positionPopup(e));
+    el.addEventListener('mouseleave', hidePopup);
+  });
+
+  // ── 필터 ────────────────────────────────────
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const f = btn.dataset.filter;
+      document.querySelectorAll('.badge-wrap').forEach(w => {
+        const isLocked = w.dataset.locked === '1';
+        if (f === 'all') {
+          w.style.display = '';
+        } else if (f === 'unlocked') {
+          w.style.display = isLocked ? 'none' : '';
+        } else {
+          w.style.display = isLocked ? '' : 'none';
+        }
+      });
+    });
+  });
+</script>
+</body>
+</html>

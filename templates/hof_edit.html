@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit HoF — NEXORIA_OS</title>
+  <link rel="stylesheet" href="/static/css/hof.css">
+</head>
+<body>
+
+<nav id="topnav">
+  <a href="/" class="nav-brand">[NEXORIA_OS]</a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/hof">Hall of Fame</a>
+    <a href="/hof/edit" class="active">✏ Edit HoF</a>
+  </div>
+</nav>
+
+<div class="hof-edit-wrap">
+  <p class="hof-edit-title">▣ HOF_EDITOR.exe</p>
+
+  <form method="POST" action="/hof/edit">
+
+    {% set categories = [
+      ('hof',    'HALL OF FAME',        '#FFD700'),
+      ('global', 'GLOBAL AGENT',        '#00BFFF'),
+      ('career', 'CAREER : TARGET NIS', '#32CD32'),
+      ('field',  'FIELD OPERATIONS',    '#DC143C')
+    ] %}
+
+    {% for cat_id, cat_name, cat_color in categories %}
+    <div class="hof-edit-cat">
+      <p class="hof-edit-cat-label" style="color:{{ cat_color }};">[ {{ cat_name }} ]</p>
+
+      {% for badge in badges %}
+      {% if badge.category == cat_id %}
+      <div class="hof-edit-row">
+        <div class="hof-edit-row-top">
+          <input type="hidden" name="badge_id" value="{{ badge.id }}">
+          <span class="hof-edit-badge-name">{{ badge.name }}</span>
+          <label class="lock-toggle">
+            <input type="checkbox" name="locked_{{ badge.id }}"
+              {% if badge.locked %}checked{% endif %}>
+            LOCKED
+          </label>
+        </div>
+        <div class="hof-edit-fields">
+          <div class="hof-edit-field">
+            <label>달성일 (YYYY-MM-DD)</label>
+            <input type="text" name="date_{{ badge.id }}"
+                   value="{{ badge.date }}" placeholder="2025-01-01">
+          </div>
+          <div class="hof-edit-field">
+            <label>관련 링크 (URL)</label>
+            <input type="text" name="link_{{ badge.id }}"
+                   value="{{ badge.link }}" placeholder="https://...">
+          </div>
+          <div class="hof-edit-field">
+            <label>Unlock Condition</label>
+            <input type="text" name="condition_{{ badge.id }}"
+                   value="{{ badge.unlock_condition }}" placeholder="잠금 해제 조건">
+          </div>
+          <div class="hof-edit-field">
+            <label>상세 설명</label>
+            <textarea name="detail_{{ badge.id }}" rows="2">{{ badge.detail }}</textarea>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+    {% endfor %}
+
+    <div style="display:flex;gap:12px;margin-top:10px;">
+      <button class="hof-save-btn" type="submit">💾 저장</button>
+      <a href="/hof" class="hof-save-btn" style="text-decoration:none;">✕ 취소</a>
+    </div>
+
+  </form>
+</div>
+
+<div id="taskbar">
+  <div class="taskbar-start">▶ START</div>
+  <div class="taskbar-clock" id="clock"></div>
+</div>
+
+<script>
+  function tick() {
+    const now = new Date();
+    document.getElementById('clock').textContent =
+      String(now.getHours()).padStart(2,'0') + ':' +
+      String(now.getMinutes()).padStart(2,'0');
+  }
+  tick(); setInterval(tick, 10000);
+</script>
+</body>
+</html>

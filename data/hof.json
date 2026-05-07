@@ -1,0 +1,169 @@
+{
+  "badges": [
+    {
+      "id": "defcon_finalist",
+      "category": "hof",
+      "name": "DEFCON Finalist",
+      "desc": "세계 최대 해킹 대회 DEFCON 본선 진출",
+      "locked": true,
+      "unlock_condition": "DEFCON CTF 본선 진출 시",
+      "date": "",
+      "detail": "세계 최대 규모의 해킹 컨퍼런스 DEFCON에서 본선에 진출하는 것을 목표로 하고 있습니다.",
+      "link": ""
+    },
+    {
+      "id": "elite_operative",
+      "category": "hof",
+      "name": "Elite Operative",
+      "desc": "RubiyaLab 전력팀(Expeditions) 소속 및 활동",
+      "locked": false,
+      "unlock_condition": "",
+      "date": "2025-01-01",
+      "detail": "RubiyaLab의 Expeditions & Crypto 팀 소속으로 활동 중.",
+      "link": ""
+    },
+    {
+      "id": "the_president",
+      "category": "hof",
+      "name": "The President",
+      "desc": "건국대학교 보안 소모임 seKUrity 회장",
+      "locked": false,
+      "unlock_condition": "",
+      "date": "2026-01-01",
+      "detail": "건국대학교 글로컬 캠퍼스 보안 소모임 seKUrity의 회장으로 활동 중.",
+      "link": ""
+    },
+    {
+      "id": "bob_whs",
+      "category": "hof",
+      "name": "BoB / WHS Candidate",
+      "desc": "차세대 보안 리더(BoB) 또는 화이트햇 스쿨 참여",
+      "locked": true,
+      "unlock_condition": "BoB 또는 WHS 합격 시",
+      "date": "",
+      "detail": "차세대 보안 리더 양성 프로그램 BoB 또는 화이트햇 스쿨 참여를 목표로 준비 중.",
+      "link": ""
+    },
+    {
+      "id": "english_master",
+      "category": "global",
+      "name": "English Master",
+      "desc": "토익 900점 이상 달성 (목표: 990점)",
+      "locked": true,
+      "unlock_condition": "TOEIC 900점 이상 달성 시",
+      "date": "",
+      "detail": "해외 컨퍼런스 및 국제 CTF에서 자유로운 소통을 위한 영어 능력 목표.",
+      "link": ""
+    },
+    {
+      "id": "jlpt",
+      "category": "global",
+      "name": "JLPT N5+",
+      "desc": "일본어 능력 시험 고득점 합격",
+      "locked": true,
+      "unlock_condition": "JLPT N5 이상 합격 시",
+      "date": "",
+      "detail": "일본어 능력 시험 합격을 목표로 준비 중.",
+      "link": ""
+    },
+    {
+      "id": "hsk",
+      "category": "global",
+      "name": "HSK Conqueror",
+      "desc": "중국어 자격증 취득",
+      "locked": true,
+      "unlock_condition": "HSK 자격증 취득 시",
+      "date": "",
+      "detail": "중국어 자격증 취득을 목표로 준비 중.",
+      "link": ""
+    },
+    {
+      "id": "multi_linguist",
+      "category": "global",
+      "name": "Multi-Linguist",
+      "desc": "3개국어 이상(한국어 포함) 활용 능력 보유",
+      "locked": true,
+      "unlock_condition": "3개국어 이상 자격증 취득 시",
+      "date": "",
+      "detail": "한국어를 포함한 3개국어 이상의 실용적 활용 능력 보유를 목표로 하고 있습니다.",
+      "link": ""
+    },
+    {
+      "id": "niat",
+      "category": "career",
+      "name": "NIAT Strategist",
+      "desc": "국정원 인적성 시험(NIAT) 준비 및 합격",
+      "locked": true,
+      "unlock_condition": "NIAT 합격 시",
+      "date": "",
+      "detail": "국가정보원 인적성 시험 합격을 위해 준비 중.",
+      "link": ""
+    },
+    {
+      "id": "certified",
+      "category": "career",
+      "name": "Certified Specialist",
+      "desc": "SW/IT 관련 국가 공인 자격증 취득",
+      "locked": true,
+      "unlock_condition": "정보보안기사 등 국가공인 자격증 취득 시",
+      "date": "",
+      "detail": "정보보안기사 등 국가공인 SW/IT 자격증 취득을 목표로 준비 중.",
+      "link": ""
+    },
+    {
+      "id": "black_belt",
+      "category": "career",
+      "name": "Black Belt",
+      "desc": "무도 단증 보유 (체력과 정신력 증명)",
+      "locked": false,
+      "unlock_condition": "",
+      "date": "",
+      "detail": "무도 단증 보유. 체력과 정신력을 갖춘 보안 전문가임을 증명.",
+      "link": ""
+    },
+    {
+      "id": "security_researcher",
+      "category": "career",
+      "name": "Security Researcher",
+      "desc": "국가 안보 관련 공모전 참여",
+      "locked": false,
+      "unlock_condition": "",
+      "date": "",
+      "detail": "국가 안보 관련 공모전에 참여하며 연구 역량을 키우고 있습니다.",
+      "link": ""
+    },
+    {
+      "id": "ctf_veteran",
+      "category": "field",
+      "name": "CTF Veteran",
+      "desc": "국내외 CTF 10회 이상 참여",
+      "locked": false,
+      "unlock_condition": "",
+      "date": "",
+      "detail": "국내외 다양한 CTF 대회에 참여하며 실전 경험을 쌓고 있습니다.",
+      "link": ""
+    },
+    {
+      "id": "bug_hunter",
+      "category": "field",
+      "name": "Bug Hunter",
+      "desc": "실제 서비스/워게임 취약점 10개 이상 제보",
+      "locked": true,
+      "unlock_condition": "취약점 10개 이상 제보 시",
+      "date": "",
+      "detail": "실제 서비스 또는 워게임 사이트에서 취약점을 발견하고 제보하는 것을 목표로 하고 있습니다.",
+      "link": ""
+    },
+    {
+      "id": "active_project",
+      "category": "field",
+      "name": "Active Project N",
+      "desc": "개인 서버 구축, 암호학 툴킷 등 프로젝트 완성",
+      "locked": false,
+      "unlock_condition": "",
+      "date": "2026-05-07",
+      "detail": "개인 서버 구축, 암호학 툴킷 등 다수의 개인 프로젝트를 완성했습니다.",
+      "link": ""
+    }
+  ]
+}

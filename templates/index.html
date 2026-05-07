@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXORIA_OS</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<!-- ── Boot Screen ── -->
+<div id="boot-screen">
+  <div class="boot-inner">
+    <div class="boot-logo">
+      <p class="boot-title">NEXORIA_OS</p>
+      <p class="boot-subtitle">Initializing system...</p>
+    </div>
+    <canvas id="cat-canvas"></canvas>
+    <div class="xp-bar-track">
+      <div class="xp-bar-moving">
+        {% for _ in range(20) %}<div class="xp-seg"></div>{% endfor %}
+      </div>
+    </div>
+    <p class="boot-loading-text" id="boot-text">Boot sequence started...</p>
+  </div>
+  <p class="boot-copyright">Copyright &copy; 2026 이여랑. All rights reserved.</p>
+</div>
+
+<!-- ── Nav ── -->
+<nav id="topnav">
+  <a href="/" class="nav-brand">[NEXORIA_OS]</a>
+  <div class="nav-links">
+    <a href="/" class="active">Home</a>
+    <a href="/hof">Hall of Fame</a>
+    <a href="/archive">Archive</a>
+    <a href="/roadmap">Roadmap</a>
+    <a href="/edit">✏ Edit</a>
+  </div>
+</nav>
+
+<!-- ── Desktop ── -->
+<div id="desktop">
+
+  <!-- 왼쪽 sticky -->
+  <div class="col-left">
+
+    <div class="win">
+      <div class="win-bar">
+        <span class="win-title">▣ profile.exe</span>
+        <div class="win-btns">
+          <span class="win-btn">─</span><span class="win-btn">□</span><span class="win-btn red">×</span>
+        </div>
+      </div>
+      <div class="win-body" style="text-align:center;">
+        <form id="profile-pic-form" method="POST" action="/upload_profile" enctype="multipart/form-data" style="display:none;">
+          <input type="file" id="profile-pic-input" name="profile_image" accept="image/*">
+        </form>
+        <div class="profile-img-box" onclick="document.getElementById('profile-pic-input').click()">
+          {% if p.profile_image %}
+            <img src="/static/uploads/{{ p.profile_image }}" alt="profile">
+          {% else %}
+            <span>👤</span>
+          {% endif %}
+          <div class="img-overlay">사진 변경</div>
+        </div>
+        <p class="profile-name">{{ p.name }}</p>
+        <hr class="profile-divider">
+        <div class="profile-sub">
+          <p>{{ p.age }} · {{ p.grade }}</p>
+          <p>{{ p.org }}</p>
+          <p>{{ p.specialty }}</p>
+          <span class="mbti-badge">{{ p.mbti }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="win">
+      <div class="win-bar">
+        <span class="win-title">▣ status.exe</span>
+        <div class="win-btns">
+          <span class="win-btn">─</span><span class="win-btn">□</span><span class="win-btn red">×</span>
+        </div>
+      </div>
+      <div class="win-body">
+        <div class="status-row">
+          <div class="status-dot" style="background:#3a3;"></div>
+          <span class="status-text">ONLINE</span>
+        </div>
+        {% if p.location %}
+        <div class="status-row">
+          <span style="font-size:10px;width:8px;text-align:center;flex-shrink:0;">📍</span>
+          <span class="status-text">{{ p.location }}</span>
+        </div>
+        {% endif %}
+        {% if p.mood %}
+        <div class="status-row">
+          <span style="font-size:10px;width:8px;text-align:center;flex-shrink:0;">💬</span>
+          <span class="status-text">{{ p.mood }}</span>
+        </div>
+        {% endif %}
+        {% if p.goal %}
+        <div class="status-row">
+          <div class="status-dot"></div>
+          <span class="status-text">{{ p.goal }}</span>
+        </div>
+        {% endif %}
+        {% if p.current %}
+        <div class="status-row">
+          <span class="status-text" style="display:block; text-align:center; width:100%; letter-spacing:0.5px; color:var(--text-dim); font-size:0.8rem; white-space:nowrap;">════*.·:·.✧ {{ p.current }} ✧.·:·.*════</span>
+        </div>
+        {% endif %}
+        {% for item in p.status_extra %}
+        <div class="status-row">
+          <div class="status-dot" style="background:{{ item.dot }};"></div>
+          <span class="status-text">{{ item.text }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    {% if p.skills %}
+    <div class="win">
+      <div class="win-bar">
+        <span class="win-title">▣ skills.exe</span>
+        <div class="win-btns">
+          <span class="win-btn">─</span><span class="win-btn">□</span><span class="win-btn red">×</span>
+        </div>
+      </div>
+      <div class="win-body">
+        {% for sk in p.skills %}
+        <div class="skill-row">
+          <div class="skill-header">
+            <span class="skill-name">{{ sk.name }}</span>
+            <span class="skill-pct">{{ sk.pct }}%</span>
+          </div>
+          <div class="skill-track">
+            <div class="skill-fill" style="width:{{ sk.pct }}%;"></div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+  </div><!-- /col-left -->
+
+  <!-- 오른쪽 -->
+  <div class="col-right">
+
+    <div class="win">
+      <div class="win-bar">
+        <span class="win-title">▣ about_me.exe</span>
+        <div class="win-btns">
+          <span class="win-btn">─</span><span class="win-btn">□</span><span class="win-btn red">×</span>
+        </div>
+      </div>
+      <div class="win-body">
+        <p class="sec-label">About</p>
+        <p style="white-space:pre-line; color:#444; font-size:0.88rem;">{{ p.about }}</p>
+
+        <p class="sec-label">Stack</p>
+        {% if p.stack_languages %}
+        <p class="stack-cat-label">Languages</p>
+        <div class="tag-row" style="margin-bottom:8px;">
+          {% for s in p.stack_languages %}<span class="tag">{{ s }}</span>{% endfor %}
+        </div>
+        {% endif %}
+        {% if p.stack_security %}
+        <p class="stack-cat-label">Security</p>
+        <div class="tag-row" style="margin-bottom:8px;">
+          {% for s in p.stack_security %}<span class="tag">{{ s }}</span>{% endfor %}
+        </div>
+        {% endif %}
+        {% if p.stack_tools %}
+        <p class="stack-cat-label">Tools</p>
+        <div class="tag-row" style="margin-bottom:4px;">
+          {% for s in p.stack_tools %}<span class="tag">{{ s }}</span>{% endfor %}
+        </div>
+        {% endif %}
+
+        <p class="sec-label">Affiliation</p>
+        <div class="tag-row">
+          {% for a in p.affiliation %}<span class="tag">{{ a }}</span>{% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="win">
+      <div class="win-bar">
+        <span class="win-title">▣ contact.exe</span>
+        <div class="win-btns">
+          <span class="win-btn">─</span><span class="win-btn">□</span><span class="win-btn red">×</span>
+        </div>
+      </div>
+      <div class="win-body">
+        <p class="sec-label">Links</p>
+        {% for c in p.contact %}
+        <a href="{{ c.url }}" class="sns-link" target="_blank" rel="noopener">
+          <div class="sns-icon">{{ c.icon }}</div>
+          <div>
+            <span>{{ c.label }}</span>
+            {% if c.sub %}<br><span class="sns-sub">{{ c.sub }}</span>{% endif %}
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="win">
+      <div class="win-bar">
+        <span class="win-title">▣ gallery.exe</span>
+        <div class="win-btns">
+          <span class="win-btn">─</span><span class="win-btn">□</span><span class="win-btn red">×</span>
+        </div>
+      </div>
+      <div class="win-body">
+        <p class="sec-label">Images</p>
+
+        {% if p.images %}
+        <div class="gallery-preview">
+          {% for img in p.images[:3] %}
+          <div class="gallery-item"
+               data-filename="{{ img.filename }}"
+               data-caption="{{ img.caption }}"
+               data-date="{{ img.date }}"
+               onclick="openLightbox(this)">
+            <img src="/static/uploads/{{ img.filename }}" alt="">
+            {% if img.caption %}
+            <div class="gallery-caption">{{ img.caption }}</div>
+            {% endif %}
+            <form method="POST" action="/delete_image/{{ img.filename }}"
+                  onclick="event.stopPropagation()">
+              <button class="del-btn" type="submit">✕</button>
+            </form>
+          </div>
+          {% endfor %}
+        </div>
+        {% if p.images|length > 3 %}
+        <div class="more-btn-wrap">
+          <button class="btn-px" onclick="openGalleryModal()">
+            더보기 ({{ p.images|length }}장)
+          </button>
+        </div>
+        {% endif %}
+        {% else %}
+        <p style="color:var(--text-dim);font-size:0.82rem;margin-bottom:10px;">아직 이미지가 없습니다.</p>
+        {% endif %}
+
+        <form class="upload-form" method="POST" action="/upload" enctype="multipart/form-data">
+          <input type="file" name="image" accept="image/*" required>
+          <input class="upload-caption-input" type="text" name="caption"
+                 placeholder="한 줄 메모..." maxlength="80">
+          <button class="btn-px" type="submit">+ 업로드</button>
+        </form>
+      </div>
+    </div>
+
+  </div><!-- /col-right -->
+</div><!-- /desktop -->
+
+<!-- ── 갤러리 모달 ── -->
+<div id="gallery-modal" class="gallery-modal hidden"
+     onclick="if(event.target===this)closeGalleryModal()">
+  <div class="gallery-modal-inner">
+    <div class="gallery-modal-bar">
+      <span class="gallery-modal-title">▣ gallery_all.exe</span>
+      <div class="win-btns">
+        <span class="win-btn">─</span>
+        <span class="win-btn">□</span>
+        <span class="win-btn red" style="cursor:pointer;" onclick="closeGalleryModal()">×</span>
+      </div>
+    </div>
+    <div class="gallery-modal-body">
+      <div class="gallery-all-grid">
+        {% for img in p.images %}
+        <div class="gallery-item"
+             data-filename="{{ img.filename }}"
+             data-caption="{{ img.caption }}"
+             data-date="{{ img.date }}"
+             onclick="openLightbox(this)">
+          <img src="/static/uploads/{{ img.filename }}" alt="">
+          {% if img.caption %}
+          <div class="gallery-caption">{{ img.caption }}</div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 라이트박스 ── -->
+<div id="lightbox" class="lightbox hidden"
+     onclick="if(event.target===this)closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">×</button>
+  <div class="lightbox-inner">
+    <div class="lightbox-date" id="lb-date"></div>
+    <img class="lightbox-img" id="lb-img" src="" alt="">
+    <p class="lightbox-caption" id="lb-caption"></p>
+  </div>
+</div>
+
+<!-- ── Taskbar ── -->
+<div id="taskbar">
+  <div class="taskbar-clock" id="clock"></div>
+</div>
+
+<script src="/static/js/boot.js"></script>
+<script>
+  // 프로필 사진 즉시 업로드
+  document.getElementById('profile-pic-input').addEventListener('change', function () {
+    if (this.files.length) document.getElementById('profile-pic-form').submit();
+  });
+
+  // 시계
+  function tick() {
+    const now = new Date();
+    document.getElementById('clock').textContent =
+      String(now.getHours()).padStart(2, '0') + ':' +
+      String(now.getMinutes()).padStart(2, '0');
+  }
+  tick();
+  setInterval(tick, 10000);
+
+  // 날짜 포맷 YYYY.MM.DD
+  function fmtDate(d) {
+    if (!d) return '';
+    const [y, m, day] = d.split('-');
+    return y + '.' + m + '.' + day;
+  }
+
+  // ── 라이트박스 ──────────────────────────────
+  function openLightbox(el) {
+    document.getElementById('lb-img').src =
+      '/static/uploads/' + el.dataset.filename;
+    document.getElementById('lb-caption').textContent =
+      el.dataset.caption || '';
+    document.getElementById('lb-date').textContent =
+      fmtDate(el.dataset.date);
+    document.getElementById('lightbox').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  // ── 갤러리 모달 ─────────────────────────────
+  function openGalleryModal() {
+    document.getElementById('gallery-modal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeGalleryModal() {
+    document.getElementById('gallery-modal').classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  // ESC 키로 닫기
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      closeLightbox();
+      closeGalleryModal();
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,208 @@
+[
+  {
+    "id": "step1",
+    "title": "Step 1. 시스템 부팅",
+    "subtitle": "System Boot",
+    "color": "#7a7a7a",
+    "nodes": [
+      {
+        "id": "cs_admission",
+        "title": "컴퓨터공학과 입학",
+        "desc": "보안 전문가를 향한 첫 번째 세션 시작",
+        "unlocked": true
+      },
+      {
+        "id": "hack_intro",
+        "title": "해킹 입문",
+        "desc": "웹 해킹으로 해킹 입문, 다양한 활동 시작",
+        "unlocked": true
+      },
+      {
+        "id": "sekurity_join",
+        "title": "seKUrity 입부",
+        "desc": "혼자가 아닌 팀으로서의 보안 공부 시작",
+        "unlocked": true
+      }
+    ]
+  },
+  {
+    "id": "step2",
+    "title": "Step 2. 루트 권한 획득",
+    "subtitle": "Root Access Granted",
+    "color": "#3a8a58",
+    "nodes": [
+      {
+        "id": "mentor",
+        "title": "멘토진 활동",
+        "desc": "배운 지식을 공유하며 리더십의 기초를 다짐",
+        "unlocked": true
+      },
+      {
+        "id": "president",
+        "title": "회장/총무 겸임",
+        "desc": "seKUrity의 회장 임명\n조직을 이끌고 운영하는 책임감을 배움",
+        "unlocked": true
+      },
+      {
+        "id": "wargame_ctf",
+        "title": "워게임 & CTF 참여",
+        "desc": "이론을 넘어 실전 필드에서 수많은 삽질과 해결의 기록을 쌓음",
+        "unlocked": true
+      },
+      {
+        "id": "ctf_create",
+        "title": "CTF 문제 제작 및 운영",
+        "desc": "공격자를 넘어 설계자로서 MSG CTF 등 운영에 참여",
+        "unlocked": true
+      }
+    ]
+  },
+  {
+    "id": "step3",
+    "title": "Step 3. 심층 침투 작전",
+    "subtitle": "Deep Penetration Ops",
+    "color": "#3a6ab8",
+    "nodes": [
+      {
+        "id": "rubiyalab_join",
+        "title": "RubiyaLab 합류",
+        "desc": "국내 CTF 팀에 합류하여 더 깊은 심연의 기술을 탐구",
+        "unlocked": true
+      },
+      {
+        "id": "rubiyalab_exp",
+        "title": "RL Expeditions 합류",
+        "desc": "정예 멤버로서 국제 무대를 향한 화력 집중",
+        "unlocked": true
+      },
+      {
+        "id": "defcon",
+        "title": "DEFCON 본선 진출",
+        "desc": "전 세계 보안인들의 꿈, 라스베이거스 본선 무대",
+        "unlocked": false
+      },
+      {
+        "id": "codegate",
+        "title": "코드게이트 본선",
+        "desc": "국내외 최정상 해커들과 어깨를 나란히 하며 실전 감각 증명",
+        "unlocked": false
+      }
+    ]
+  },
+  {
+    "id": "step4",
+    "title": "Step 4. 연구 및 특화",
+    "subtitle": "Research & Specialized",
+    "color": "#7a3ab8",
+    "nodes": [
+      {
+        "id": "crypto_study",
+        "title": "암호학 스터디",
+        "desc": "수학적 원리를 꿰뚫는 암호학 전문가로 거듭나기",
+        "unlocked": true
+      },
+      {
+        "id": "crypto_toolkit",
+        "title": "암호 툴킷 제작",
+        "desc": "나만의 무기를 직접 설계하고 구현하는 개인 프로젝트",
+        "unlocked": false
+      },
+      {
+        "id": "paper",
+        "title": "국가 안보 논문 공모전",
+        "desc": "기술을 넘어 국가 안보 정책과 전략적 사고를 확장",
+        "unlocked": true
+      }
+    ]
+  },
+  {
+    "id": "step5",
+    "title": "Step 5. 관문 돌파",
+    "subtitle": "Breaking Barriers",
+    "color": "#b8902a",
+    "nodes": [
+      {
+        "id": "bob",
+        "title": "BoB 수료",
+        "desc": "Best of the Best — 차세대 보안 리더로서의 공식 검증",
+        "unlocked": false
+      },
+      {
+        "id": "whs",
+        "title": "WHS 수료",
+        "desc": "화이트햇 스쿨 — 국가 주도 정예 보안 인재 과정",
+        "unlocked": false
+      },
+      {
+        "id": "niat",
+        "title": "NIAT / 전공 시험",
+        "desc": "국가 기관 진입을 위한 전략적 관문 통과",
+        "unlocked": false
+      },
+      {
+        "id": "security_cert",
+        "title": "정보보안기사 취득",
+        "desc": "국가 공인 보안 자격증으로 실력을 공식 인증",
+        "unlocked": false
+      }
+    ]
+  },
+  {
+    "id": "step6",
+    "title": "Step 6. 실전 경력 구축",
+    "subtitle": "Field Experience",
+    "color": "#b84030",
+    "nodes": [
+      {
+        "id": "internship",
+        "title": "보안 기업 인턴 / 실무",
+        "desc": "실제 보안 현장에서 이론을 실무로 전환하는 경험",
+        "unlocked": false
+      },
+      {
+        "id": "cve",
+        "title": "CVE 등록 / 취약점 연구",
+        "desc": "독자적 취약점 발굴 및 공개 보안 연구 실적 쌓기",
+        "unlocked": false
+      },
+      {
+        "id": "oscp",
+        "title": "OSCP / 국제 자격증",
+        "desc": "세계가 인정하는 실전형 침투 테스트 자격증 취득",
+        "unlocked": false
+      },
+      {
+        "id": "nis_prep",
+        "title": "국정원 연계 활동",
+        "desc": "인턴십, 학술 연계, 사전 네트워크 구축으로 진입로 확보",
+        "unlocked": false
+      }
+    ]
+  },
+  {
+    "id": "step7",
+    "title": "Step 7. 최종 목적지",
+    "subtitle": "The Final Mission",
+    "color": "#c8a020",
+    "nodes": [
+      {
+        "id": "nis_hired",
+        "title": "국가정보원 채용 합격",
+        "desc": "공개채용 / 특채를 통한 국가 보안 조직 공식 합류",
+        "unlocked": false
+      },
+      {
+        "id": "cyber_command",
+        "title": "사이버안보센터 임용",
+        "desc": "국가 사이버위협 대응 최일선에서 임무 수행",
+        "unlocked": false
+      },
+      {
+        "id": "national_security",
+        "title": "국가 보안 전문가",
+        "desc": "대한민국 보안의 최전선을 지키는 요원. 모든 로드맵의 종착지",
+        "unlocked": false
+      }
+    ]
+  }
+]

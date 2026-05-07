@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit — NEXORIA_OS</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<nav id="topnav">
+  <a href="/" class="nav-brand">[NEXORIA_OS]</a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/hof">Hall of Fame</a>
+    <a href="/archive">Archive</a>
+    <a href="/roadmap">Roadmap</a>
+    <a href="/edit" class="active">✏ Edit</a>
+  </div>
+</nav>
+
+<div class="edit-wrap">
+  <div class="edit-inner">
+
+    <!-- 프로필 사진 -->
+    <div class="win" style="margin-bottom:0;">
+      <div class="win-bar">
+        <span class="win-title">▣ profile_image.exe</span>
+        <div class="win-btns">
+          <span class="win-btn">─</span><span class="win-btn">□</span><span class="win-btn red">×</span>
+        </div>
+      </div>
+      <div class="win-body" style="display:flex; align-items:center; gap:16px;">
+        <div style="width:72px; height:72px; border:2px solid #888; background:#ddd; overflow:hidden; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:32px;">
+          {% if p.profile_image %}
+            <img src="/static/uploads/{{ p.profile_image }}" style="width:100%;height:100%;object-fit:cover;">
+          {% else %}👤{% endif %}
+        </div>
+        <form method="POST" action="/upload_profile" enctype="multipart/form-data" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <input type="file" name="profile_image" accept="image/*" style="font-family:var(--body); font-size:0.82rem; color:var(--text-mid);">
+          <button class="btn-px" type="submit">업로드</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 기본 정보 -->
+    <div class="win">
+      <div class="win-bar">
+        <span class="win-title">▣ edit_profile.exe</span>
+        <div class="win-btns">
+          <span class="win-btn">─</span><span class="win-btn">□</span><span class="win-btn red">×</span>
+        </div>
+      </div>
+      <div class="win-body">
+        <form method="POST" action="/edit">
+
+          <p class="sec-label">기본 정보</p>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:4px;">
+            <div class="edit-field">
+              <label class="edit-label">이름</label>
+              <input class="edit-input" type="text" name="name" value="{{ p.name }}">
+            </div>
+            <div class="edit-field">
+              <label class="edit-label">나이</label>
+              <input class="edit-input" type="text" name="age" value="{{ p.age }}">
+            </div>
+            <div class="edit-field">
+              <label class="edit-label">학년</label>
+              <input class="edit-input" type="text" name="grade" value="{{ p.grade }}">
+            </div>
+            <div class="edit-field">
+              <label class="edit-label">MBTI</label>
+              <input class="edit-input" type="text" name="mbti" value="{{ p.mbti }}">
+            </div>
+            <div class="edit-field">
+              <label class="edit-label">소속</label>
+              <input class="edit-input" type="text" name="org" value="{{ p.org }}">
+            </div>
+            <div class="edit-field">
+              <label class="edit-label">전공/특기</label>
+              <input class="edit-input" type="text" name="specialty" value="{{ p.specialty }}">
+            </div>
+          </div>
+
+          <p class="sec-label">Status 창 내용</p>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:4px;">
+            <div class="edit-field">
+              <label class="edit-label">목표</label>
+              <input class="edit-input" type="text" name="goal" value="{{ p.goal }}">
+            </div>
+            <div class="edit-field">
+              <label class="edit-label">현재 상태 (텍스트)</label>
+              <input class="edit-input" type="text" name="current" value="{{ p.current }}">
+            </div>
+            <div class="edit-field">
+              <label class="edit-label">📍 위치</label>
+              <input class="edit-input" type="text" name="location" value="{{ p.location }}" placeholder="예: Seoul, Korea">
+            </div>
+            <div class="edit-field">
+              <label class="edit-label">💬 기분/상태</label>
+              <input class="edit-input" type="text" name="mood" value="{{ p.mood }}" placeholder="예: 💻 코딩 중">
+            </div>
+          </div>
+
+          <!-- 추가 상태줄 -->
+          <p class="sec-label">Skills 게이지</p>
+          <p class="edit-hint" style="margin-bottom:8px;">스킬 이름 · 퍼센트 (0~100)</p>
+          {% for sk in p.skills %}
+          <div style="display:grid; grid-template-columns:1fr 80px; gap:6px; margin-bottom:6px;">
+            <input class="edit-input" type="text"   name="skill_name" value="{{ sk.name }}" placeholder="Python">
+            <input class="edit-input" type="number" name="skill_pct"  value="{{ sk.pct }}"  placeholder="80" min="0" max="100">
+          </div>
+          {% endfor %}
+          {% for _ in range(2) %}
+          <div style="display:grid; grid-template-columns:1fr 80px; gap:6px; margin-bottom:6px;">
+            <input class="edit-input" type="text"   name="skill_name" placeholder="스킬 이름">
+            <input class="edit-input" type="number" name="skill_pct"  placeholder="0" min="0" max="100">
+          </div>
+          {% endfor %}
+
+          <p class="sec-label">추가 상태줄</p>
+          <p class="edit-hint" style="margin-bottom:8px;">점 색상(CSS color) · 텍스트</p>
+          {% for item in p.status_extra %}
+          <div style="display:grid; grid-template-columns:120px 1fr; gap:6px; margin-bottom:6px;">
+            <input class="edit-input" type="text" name="extra_dot"  value="{{ item.dot }}"  placeholder="#888">
+            <input class="edit-input" type="text" name="extra_text" value="{{ item.text }}" placeholder="상태 메시지">
+          </div>
+          {% endfor %}
+          {% for _ in range(2) %}
+          <div style="display:grid; grid-template-columns:120px 1fr; gap:6px; margin-bottom:6px;">
+            <input class="edit-input" type="text" name="extra_dot"  placeholder="#888">
+            <input class="edit-input" type="text" name="extra_text" placeholder="상태 메시지">
+          </div>
+          {% endfor %}
+
+          <p class="sec-label">About</p>
+          <div class="edit-field">
+            <textarea class="edit-textarea" name="about" rows="4">{{ p.about }}</textarea>
+          </div>
+
+          <p class="sec-label">Stack</p>
+          <div class="edit-field">
+            <label class="edit-label">Languages</label>
+            <input class="edit-input" type="text" name="stack_languages" value="{{ p.stack_languages | join(', ') }}" placeholder="Python, C, ...">
+            <span class="edit-hint">쉼표(,)로 구분</span>
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Security</label>
+            <input class="edit-input" type="text" name="stack_security" value="{{ p.stack_security | join(', ') }}" placeholder="Cryptography, Web Hacking, ...">
+            <span class="edit-hint">쉼표(,)로 구분</span>
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Tools</label>
+            <input class="edit-input" type="text" name="stack_tools" value="{{ p.stack_tools | join(', ') }}" placeholder="Linux, Git, ...">
+            <span class="edit-hint">쉼표(,)로 구분</span>
+          </div>
+
+          <p class="sec-label">Affiliation</p>
+          <div class="edit-field">
+            <textarea class="edit-textarea" name="affiliation" rows="3">{{ p.affiliation | join('\n') }}</textarea>
+            <span class="edit-hint">줄바꿈으로 구분</span>
+          </div>
+
+          <p class="sec-label">Contact Links</p>
+          <p class="edit-hint" style="margin-bottom:8px;">아이콘 · 이름 · URL</p>
+          {% for c in p.contact %}
+          <div style="margin-bottom:8px; display:flex; flex-direction:column; gap:5px;">
+            <div class="contact-row">
+              <input class="edit-input" type="text" name="contact_icon"  value="{{ c.icon }}">
+              <input class="edit-input" type="text" name="contact_label" value="{{ c.label }}">
+              <input class="edit-input" type="text" name="contact_url"   value="{{ c.url }}" placeholder="https://...">
+            </div>
+            <input class="edit-input" type="text" name="contact_sub" value="{{ c.sub }}" placeholder="한 줄 설명..." style="margin-left:0;">
+          </div>
+          {% endfor %}
+          <div style="margin-bottom:8px; display:flex; flex-direction:column; gap:5px;">
+            <div class="contact-row">
+              <input class="edit-input" type="text" name="contact_icon"  placeholder="🔗">
+              <input class="edit-input" type="text" name="contact_label" placeholder="새 링크">
+              <input class="edit-input" type="text" name="contact_url"   placeholder="https://...">
+            </div>
+            <input class="edit-input" type="text" name="contact_sub" placeholder="한 줄 설명..." style="margin-left:0;">
+          </div>
+
+          <div style="display:flex; gap:10px; margin-top:20px; padding-bottom:4px;">
+            <button class="btn-px" type="submit">💾 저장</button>
+            <a href="/" class="btn-px" style="text-decoration:none;">✕ 취소</a>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="taskbar">
+  <div class="taskbar-clock" id="clock"></div>
+</div>
+
+<script>
+  function tick() {
+    const now = new Date();
+    document.getElementById('clock').textContent =
+      String(now.getHours()).padStart(2,'0') + ':' +
+      String(now.getMinutes()).padStart(2,'0');
+  }
+  tick();
+  setInterval(tick, 10000);
+</script>
+</body>
+</html>

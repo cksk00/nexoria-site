@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Archive — NEXORIA_OS</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <style>
+    .archive-filter {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .af-btn {
+      font-family: var(--body);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 4px 14px;
+      background: #e8e8e8;
+      border: 2px solid;
+      border-color: #eee #888 #888 #eee;
+      color: var(--text-mid);
+      cursor: pointer;
+    }
+    .af-btn.active, .af-btn:hover {
+      background: #d0d0d0;
+      color: var(--text);
+    }
+    .file-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--body);
+      font-size: 0.84rem;
+    }
+    .file-table th {
+      text-align: left;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid #ddd;
+      padding: 6px 10px;
+    }
+    .file-row {
+      border-bottom: 1px solid #f0f0f0;
+      transition: background 0.1s;
+    }
+    .file-row:hover { background: #f8f8f8; }
+    .file-row td { padding: 10px 10px; vertical-align: middle; }
+    .file-type-icon {
+      font-size: 1.1rem;
+      width: 28px;
+      text-align: center;
+    }
+    .file-title {
+      font-weight: 600;
+      color: var(--text);
+    }
+    .file-cat-badge {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border: 1px solid #ccc;
+      color: var(--text-mid);
+      background: #f0f0f0;
+      white-space: nowrap;
+    }
+    .file-date { color: var(--text-dim); font-size: 0.78rem; white-space: nowrap; }
+    .file-actions { display: flex; gap: 6px; align-items: center; }
+    .btn-dl {
+      font-family: var(--body);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 12px;
+      background: #e0e0e0;
+      border: 2px solid;
+      border-color: #eee #888 #888 #eee;
+      color: var(--text);
+      text-decoration: none;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .btn-dl:hover { background: #d0d0d0; }
+    .btn-del {
+      font-family: var(--body);
+      font-size: 0.75rem;
+      padding: 4px 8px;
+      background: transparent;
+      border: 1px solid #ccc;
+      color: #aaa;
+      cursor: pointer;
+    }
+    .btn-del:hover { border-color: #888; color: #555; }
+    .upload-section { margin-top: 18px; border-top: 2px solid #eee; padding-top: 16px; }
+    .upload-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .upload-field { display: flex; flex-direction: column; gap: 5px; }
+    .upload-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .upload-input, .upload-select {
+      font-family: var(--body);
+      font-size: 0.84rem;
+      background: #fff;
+      border: 2px solid;
+      border-color: #888 #ccc #ccc #888;
+      color: var(--text);
+      padding: 7px 10px;
+    }
+    .upload-file-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 4px;
+    }
+    .empty-msg {
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.84rem;
+      padding: 30px 0;
+    }
+  </style>
+</head>
+<body>
+
+<nav id="topnav">
+  <a href="/" class="nav-brand">[NEXORIA_OS]</a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/hof">Hall of Fame</a>
+    <a href="/archive" class="active">Archive</a>
+    <a href="/roadmap">Roadmap</a>
+    <a href="/edit">✏ Edit</a>
+  </div>
+</nav>
+
+<div id="desktop" style="display:block; padding: 14px 14px 60px;">
+  <div class="win" style="max-width:860px; margin:0 auto;">
+    <div class="win-bar">
+      <span class="win-title">▣ archive.exe</span>
+      <div class="win-btns">
+        <span class="win-btn">─</span><span class="win-btn">□</span><span class="win-btn red">×</span>
+      </div>
+    </div>
+    <div class="win-body">
+
+      <!-- 필터 + 업로드 버튼 -->
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+        <div class="archive-filter" style="margin-bottom:0;">
+          <button class="af-btn active" data-cat="전체">전체</button>
+          <button class="af-btn" data-cat="보고서">보고서</button>
+          <button class="af-btn" data-cat="아이디어 정리">아이디어 정리</button>
+          <button class="af-btn" data-cat="수료증">수료증</button>
+          <button class="af-btn" data-cat="기타">기타</button>
+        </div>
+        <button class="btn-px" id="upload-toggle" onclick="toggleUpload()">+ Upload</button>
+      </div>
+
+      <!-- 업로드 폼 (토글) -->
+      <div id="upload-panel" class="upload-section" style="display:none; margin-top:0; margin-bottom:18px;">
+        <form method="POST" action="/archive/upload" enctype="multipart/form-data">
+          <div class="upload-grid">
+            <div class="upload-field">
+              <label class="upload-label">제목</label>
+              <input class="upload-input" type="text" name="title" placeholder="파일 제목" required maxlength="100">
+            </div>
+            <div class="upload-field">
+              <label class="upload-label">분류</label>
+              <select class="upload-select" name="category">
+                <option value="보고서">보고서</option>
+                <option value="아이디어 정리">아이디어 정리</option>
+                <option value="수료증">수료증</option>
+                <option value="기타">기타</option>
+              </select>
+            </div>
+            <div class="upload-field" style="grid-column:1/-1;">
+              <label class="upload-label">한 줄 설명 (선택)</label>
+              <input class="upload-input" type="text" name="desc" placeholder="간단한 설명..." maxlength="120">
+            </div>
+          </div>
+          <div class="upload-file-row">
+            <input type="file" name="file" accept=".pdf,.docx,.hwp,.md,.ppt,.pptx,.txt" required
+                   style="font-family:var(--body);font-size:0.82rem;color:var(--text-mid);">
+            <button class="btn-px" type="submit">업로드</button>
+            <button class="btn-px" type="button" onclick="toggleUpload()" style="color:var(--text-mid);">취소</button>
+          </div>
+          <p style="font-size:0.72rem;color:var(--text-dim);margin-top:6px;">
+            지원 형식: PDF, DOCX, HWP, MD, PPT, PPTX, TXT (최대 32MB)
+          </p>
+        </form>
+      </div>
+
+      <!-- 파일 목록 -->
+      {% if files %}
+      <table class="file-table">
+        <thead>
+          <tr>
+            <th style="width:36px;"></th>
+            <th>제목</th>
+            <th style="width:110px;">분류</th>
+            <th style="width:90px;">날짜</th>
+            <th style="width:110px;"></th>
+          </tr>
+        </thead>
+        <tbody id="file-list">
+          {% for f in files %}
+          <tr class="file-row" data-cat="{{ f.category }}">
+            <td class="file-type-icon">{{ f.filename | file_icon }}</td>
+            <td>
+              <span class="file-title">{{ f.title }}</span>
+              {% if f.desc %}<br><span style="font-size:0.75rem;color:var(--text-dim);">{{ f.desc }}</span>{% endif %}
+            </td>
+            <td><span class="file-cat-badge">{{ f.category }}</span></td>
+            <td class="file-date">{{ f.date }}</td>
+            <td>
+              <div class="file-actions">
+                <a class="btn-dl" href="/archive/download/{{ f.filename }}" download>↓ 다운로드</a>
+                <form method="POST" action="/archive/delete/{{ f.filename }}" style="margin:0;">
+                  <button class="btn-del" type="submit" onclick="return confirm('삭제할까요?')">✕</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="empty-msg" id="empty-msg">아직 업로드된 파일이 없습니다.</p>
+      {% endif %}
+
+
+    </div>
+  </div>
+</div>
+
+<div id="taskbar">
+  <div class="taskbar-clock" id="clock"></div>
+</div>
+
+<script>
+  function tick() {
+    const now = new Date();
+    document.getElementById('clock').textContent =
+      String(now.getHours()).padStart(2,'0') + ':' +
+      String(now.getMinutes()).padStart(2,'0');
+  }
+  tick(); setInterval(tick, 10000);
+
+  // 업로드 패널 토글
+  function toggleUpload() {
+    const panel = document.getElementById('upload-panel');
+    const btn   = document.getElementById('upload-toggle');
+    const open  = panel.style.display === 'none';
+    panel.style.display = open ? 'block' : 'none';
+    btn.textContent     = open ? '✕ 닫기' : '+ Upload';
+  }
+
+  // 카테고리 필터
+  document.querySelectorAll('.af-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.af-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const cat = btn.dataset.cat;
+      document.querySelectorAll('.file-row').forEach(row => {
+        row.style.display = (cat === '전체' || row.dataset.cat === cat) ? '' : 'none';
+      });
+    });
+  });
+</script>
+</body>
+</html>

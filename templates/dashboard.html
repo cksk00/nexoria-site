@@ -630,6 +630,7 @@ function saveMs(key, i, btn) {
 
 function deleteMs(key, i) {
   DASH_DATA[activeYear][key].milestones.splice(i, 1);
+  applyExp(key, -EXP_PER_MS);
   saveToDash(key);
   renderMilestones(key);
 }
@@ -654,8 +655,42 @@ function confirmAddMs(key, btn) {
   const val = input.value.trim();
   if (!val) return;
   DASH_DATA[activeYear][key].milestones.push(val);
+  applyExp(key, EXP_PER_MS);
   saveToDash(key);
   renderMilestones(key);
+}
+
+const EXP_PER_MS = 100;
+
+function calcLevel(exp) {
+  return Math.min(10, Math.floor(exp / 100));
+}
+
+function applyExp(key, delta) {
+  const d = DASH_DATA[activeYear][key];
+  d.exp   = Math.max(0, Math.min(1000, d.exp + delta));
+  d.level = calcLevel(d.exp);
+
+  // info panel
+  const lvEl  = document.getElementById(`lv-${key}`);
+  const numEl = document.getElementById(`exp-num-${key}`);
+  const fillEl = document.getElementById(`exp-fill-${key}`);
+  if (lvEl)   lvEl.textContent  = `LV.${String(d.level).padStart(2,'0')}`;
+  if (numEl)  numEl.textContent = `${d.exp} / ${d.max}`;
+  if (fillEl) fillEl.style.width = `${(d.exp / d.max) * 100}%`;
+
+  // legend bar
+  const legFill = document.getElementById(`leg-fill-${key}`);
+  const legExp  = document.getElementById(`leg-exp-${key}`);
+  if (legFill) legFill.style.width = `${(d.exp / d.max) * 100}%`;
+  if (legExp)  legExp.textContent  = `EXP ${d.exp}`;
+
+  // hexagon
+  const axIdx = AXES.findIndex(ax => ax.key === key);
+  if (axIdx !== -1) {
+    target[axIdx] = (d.exp / d.max) * MAX_R;
+    if (!rafId) rafId = requestAnimationFrame(tick);
+  }
 }
 
 async function saveToDash(key) {
@@ -663,7 +698,7 @@ async function saveToDash(key) {
   await fetch('/dashboard/update', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ year: activeYear, key, milestones: d.milestones })
+    body: JSON.stringify({ year: activeYear, key, milestones: d.milestones, exp: d.exp, level: d.level })
   });
 }
 

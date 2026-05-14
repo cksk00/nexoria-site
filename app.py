@@ -564,8 +564,10 @@ def dashboard_update():
         return jsonify({'error': 'not found'}), 404
     if 'milestones' in body:
         dash['data'][year][key]['milestones'] = [m.strip() for m in body['milestones'] if m.strip()]
-    if 'stats' in body:
-        dash['data'][year][key]['stats'] = body['stats']
+    if 'exp' in body:
+        dash['data'][year][key]['exp'] = int(body['exp'])
+    if 'level' in body:
+        dash['data'][year][key]['level'] = int(body['level'])
     with open(DASHBOARD_PATH, 'w', encoding='utf-8') as f:
         json.dump(dash, f, ensure_ascii=False, indent=2)
     return jsonify({'ok': True})

@@ -66,30 +66,42 @@ body {
 
 /* ── Page header ── */
 #hof-page {
-  padding: 0 24px 80px;
+  padding: 72px 24px 80px;
   max-width: 1100px;
   margin: 0 auto;
 }
 
 .hof-header {
   text-align: center;
-  padding: 56px 0 44px;
+  padding: 40px 20px 36px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid #1e1e1e;
+}
+
+.hof-header .roadmap-hero-eyebrow {
+  font-family: var(--px);
+  font-size: 0.38rem;
+  color: #444;
+  letter-spacing: 2px;
+  margin-bottom: 14px;
 }
 
 .hof-title {
   font-family: var(--px);
-  font-size: 1.2rem;
-  color: #e8e8e8;
-  letter-spacing: 6px;
-  margin-bottom: 16px;
-  text-shadow: 0 0 20px rgba(255,255,255,0.1);
+  font-size: 1.1rem;
+  color: #d0d0d0;
+  letter-spacing: 4px;
+  margin-bottom: 14px;
+  text-shadow: 0 0 30px rgba(180,180,255,0.15);
+  transform: scaleY(1.13);
 }
 
 .hof-sub {
-  font-family: var(--px);
-  font-size: 0.38rem;
-  color: #333;
-  letter-spacing: 3px;
+  font-family: var(--body);
+  font-size: 0.78rem;
+  color: #444;
+  letter-spacing: 0.3px;
+  margin-bottom: 10px;
 }
 
 /* ── Filter bar ── */

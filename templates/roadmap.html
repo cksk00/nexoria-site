@@ -13,9 +13,11 @@
   <div class="nav-links">
     <a href="/">Home</a>
     <a href="/hof">Hall of Fame</a>
-    <a href="/archive">Archive</a>
     <a href="/roadmap" class="active">Roadmap</a>
-    <a href="/edit">✏ Edit</a>
+    <a href="/archive">Archive</a>
+    <a href="/guestbook">Guestbook</a>
+    <a href="/dashboard">Dashboard</a>
+    {% if is_admin %}<a href="/edit">✏ Edit</a>{% endif %}
   </div>
 </nav>
 
@@ -25,7 +27,6 @@
     <p class="roadmap-hero-eyebrow">[ NEXORIA_OS :: CAREER.LOG ]</p>
     <h1 class="roadmap-hero-title">Road Map</h1>
     <p class="roadmap-hero-sub">════*.·:·.✧ Security Career Progress ✧.·:·.*════</p>
-    <p class="roadmap-hero-hint">자물쇠 아이콘 클릭 → 잠금/해제 &nbsp;|&nbsp; 제목·설명 클릭 → 직접 수정</p>
   </div>
 
   {% for step in steps %}
@@ -47,15 +48,11 @@
              style="--step-color: {{ step.color }};"
              data-step="{{ step.id }}"
              data-node="{{ node.id }}">
-          <div class="node-lock-icon" onclick="toggleNode(this.closest('.node-card'))">{{ '◈' if node.unlocked else '✕' }}</div>
+          {% if is_admin %}<div class="node-lock-icon" onclick="toggleNode(this.closest('.node-card'))">{{ '◈' if node.unlocked else '✕' }}</div>{% endif %}
           <div class="node-title"
-               contenteditable="true"
-               onblur="saveNode(this)"
-               onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">{{ node.title }}</div>
+               {% if is_admin %}contenteditable="true" onblur="saveNode(this)" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}"{% endif %}>{{ node.title }}</div>
           <div class="node-desc"
-               contenteditable="true"
-               onblur="saveNode(this)"
-               onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();this.blur();}">{{ node.desc }}</div>
+               {% if is_admin %}contenteditable="true" onblur="saveNode(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();this.blur()}"{% endif %}>{{ node.desc }}</div>
         </div>
         {% if not loop.last %}
         <div class="node-line"></div>
@@ -63,6 +60,7 @@
         {% endfor %}
       </div>
 
+      {% if is_admin %}
       <div class="add-node-wrap" data-step="{{ step.id }}" data-color="{{ step.color }}">
         <button class="add-node-btn" onclick="toggleAddForm(this)">＋ 노드 추가</button>
         <div class="add-node-form hidden">
@@ -76,6 +74,7 @@
           </div>
         </div>
       </div>
+      {% endif %}
     </div>
   </div>
 

@@ -13,16 +13,19 @@
   <div class="nav-links">
     <a href="/">Home</a>
     <a href="/hof" class="active">Hall of Fame</a>
-    <a href="/archive">Archive</a>
     <a href="/roadmap">Roadmap</a>
-    <a href="/hof/edit">✏ Edit HoF</a>
+    <a href="/archive">Archive</a>
+    <a href="/guestbook">Guestbook</a>
+    <a href="/dashboard">Dashboard</a>
+    {% if is_admin %}<a href="/hof/edit">✏ Edit HoF</a>{% endif %}
   </div>
 </nav>
 
 <div id="hof-page">
   <div class="hof-header">
+    <p class="roadmap-hero-eyebrow">[ NEXORIA_OS :: HALL OF FAME ]</p>
     <p class="hof-title">Hall of Fame</p>
-    <p class="hof-sub">Welcome to the Hall of Fame</p>
+    <p class="hof-sub">════*.·:·.✧ Achievements Unlocked in the Field ✧.·:·.*════</p>
   </div>
 
   <!-- 필터 -->

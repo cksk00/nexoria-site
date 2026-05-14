@@ -139,9 +139,11 @@
   <div class="nav-links">
     <a href="/">Home</a>
     <a href="/hof">Hall of Fame</a>
-    <a href="/archive" class="active">Archive</a>
     <a href="/roadmap">Roadmap</a>
-    <a href="/edit">✏ Edit</a>
+    <a href="/archive" class="active">Archive</a>
+    <a href="/guestbook">Guestbook</a>
+    <a href="/dashboard">Dashboard</a>
+    {% if is_admin %}<a href="/edit">✏ Edit</a>{% endif %}
   </div>
 </nav>
 
@@ -164,10 +166,11 @@
           <button class="af-btn" data-cat="수료증">수료증</button>
           <button class="af-btn" data-cat="기타">기타</button>
         </div>
-        <button class="btn-px" id="upload-toggle" onclick="toggleUpload()">+ Upload</button>
+        {% if is_admin %}<button class="btn-px" id="upload-toggle" onclick="toggleUpload()">+ Upload</button>{% endif %}
       </div>
 
       <!-- 업로드 폼 (토글) -->
+      {% if is_admin %}
       <div id="upload-panel" class="upload-section" style="display:none; margin-top:0; margin-bottom:18px;">
         <form method="POST" action="/archive/upload" enctype="multipart/form-data">
           <div class="upload-grid">
@@ -200,6 +203,7 @@
           </p>
         </form>
       </div>
+      {% endif %}
 
       <!-- 파일 목록 -->
       {% if files %}
@@ -225,10 +229,12 @@
             <td class="file-date">{{ f.date }}</td>
             <td>
               <div class="file-actions">
+                {% if is_admin %}
                 <a class="btn-dl" href="/archive/download/{{ f.filename }}" download>↓ 다운로드</a>
                 <form method="POST" action="/archive/delete/{{ f.filename }}" style="margin:0;">
                   <button class="btn-del" type="submit" onclick="return confirm('삭제할까요?')">✕</button>
                 </form>
+                {% endif %}
               </div>
             </td>
           </tr>

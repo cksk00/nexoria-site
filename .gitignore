@@ -9,7 +9,16 @@ venv/
 # Uploaded user files (re-upload after deploy)
 static/uploads/*
 !static/uploads/.gitkeep
+!static/uploads/archive/
 !static/uploads/archive/.gitkeep
+!static/uploads/works/
+!static/uploads/works/.gitkeep
 
 # macOS
 .DS_Store
+
+# User-generated data (서버에서 독립적으로 관리)
+data/guestbook.json
+data/events.json
+data/users.json
+data/archive.json

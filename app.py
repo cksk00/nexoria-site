@@ -1,15 +1,26 @@
+import html
 import json
 import os
 import uuid
-from datetime import date as date_obj
-from flask import Flask, render_template, request, redirect, url_for, send_from_directory, jsonify
+from datetime import date as date_obj, datetime
+from functools import wraps
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory, jsonify, session
 from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash, check_password_hash
 
-HOF_PATH      = os.path.join('data', 'hof.json')
-ROADMAP_PATH  = os.path.join('data', 'roadmap.json')
-ARCHIVE_PATH = os.path.join('data', 'archive.json')
-ARCHIVE_FOLDER = os.path.join('static', 'uploads', 'archive')
+EVENTS_PATH        = os.path.join('data', 'events.json')
+HOF_PATH           = os.path.join('data', 'hof.json')
+ROADMAP_PATH       = os.path.join('data', 'roadmap.json')
+ARCHIVE_PATH       = os.path.join('data', 'archive.json')
+ARCHIVE_FOLDER     = os.path.join('static', 'uploads', 'archive')
 ARCHIVE_EXTENSIONS = {'pdf', 'docx', 'hwp', 'md', 'ppt', 'pptx', 'txt'}
+GUESTBOOK_PATH     = os.path.join('data', 'guestbook.json')
+WORKS_PATH         = os.path.join('data', 'works.json')
+WORKS_FOLDER       = os.path.join('static', 'uploads', 'works')
+WORKS_EXTENSIONS   = {'png', 'jpg', 'jpeg', 'gif', 'webp', 'pdf', 'psd', 'ai', 'svg'}
+
+ADMIN_USERNAME = 'fhrxk'
+ADMIN_PASSWORD_HASH = generate_password_hash('fhrxk')
 
 FILE_ICONS = {
     'pdf': '📄', 'docx': '📄', 'hwp': '📄',
@@ -62,12 +73,40 @@ def save_hof(data):
         json.dump(data, f, ensure_ascii=False, indent=2)
 
 app = Flask(__name__)
+app.secret_key = 'nexoria_os_secret_k3y_2026'
 app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
 app.config['MAX_CONTENT_LENGTH'] = 32 * 1024 * 1024
 
 @app.template_filter('file_icon')
 def file_icon_filter(filename):
     return '📁'
+
+
+@app.context_processor
+def inject_auth():
+    return {
+        'current_user': session.get('username'),
+        'is_admin': session.get('role') == 'admin',
+        'is_logged_in': 'username' in session,
+    }
+
+def login_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if 'username' not in session:
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated
+
+def admin_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if session.get('role') != 'admin':
+            if request.is_json or request.content_type == 'application/json':
+                return jsonify({'error': '권한이 없습니다.'}), 403
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated
 
 DATA_PATH = os.path.join('data', 'profile.json')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
@@ -105,11 +144,60 @@ def save_profile(data):
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def load_events():
+    if not os.path.exists(EVENTS_PATH):
+        return []
+    with open(EVENTS_PATH, 'r', encoding='utf-8') as f:
+        return json.load(f)
+
+def save_events(data):
+    with open(EVENTS_PATH, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+def compute_upcoming(events, n=3):
+    today = date_obj.today()
+    result = []
+    for ev in events:
+        end   = date_obj.fromisoformat(ev['end'])
+        start = date_obj.fromisoformat(ev['start'])
+        if end >= today:
+            result.append({**ev, 'd_day': (start - today).days})
+    result.sort(key=lambda x: date_obj.fromisoformat(x['start']))
+    return result[:n]
+
 @app.route('/')
+@login_required
 def index():
-    return render_template('index.html', p=load_profile())
+    events   = load_events()
+    upcoming = compute_upcoming(events)
+    return render_template('index.html', p=load_profile(), events=events, upcoming=upcoming)
+
+@app.route('/events/add', methods=['POST'])
+@admin_required
+def events_add():
+    body     = request.get_json()
+    name     = (body.get('name')     or '').strip()
+    start    = (body.get('start')    or '').strip()
+    end      = (body.get('end')      or '').strip() or start
+    color    = (body.get('color')    or '#e05252').strip()
+    category = (body.get('category') or '').strip()
+    if not name or not start:
+        return jsonify({'error': 'missing fields'}), 400
+    events = load_events()
+    event  = {'id': uuid.uuid4().hex[:8], 'name': name,
+               'start': start, 'end': end, 'color': color, 'category': category}
+    events.append(event)
+    save_events(events)
+    return jsonify({'ok': True, 'event': event})
+
+@app.route('/events/delete/<event_id>', methods=['POST'])
+@admin_required
+def events_delete(event_id):
+    save_events([e for e in load_events() if e['id'] != event_id])
+    return jsonify({'ok': True})
 
 @app.route('/edit', methods=['GET', 'POST'])
+@admin_required
 def edit():
     p = load_profile()
     if request.method == 'POST':
@@ -161,6 +249,7 @@ def edit():
     return render_template('edit.html', p=p)
 
 @app.route('/upload_profile', methods=['POST'])
+@admin_required
 def upload_profile():
     p = load_profile()
     file = request.files.get('profile_image')
@@ -177,6 +266,7 @@ def upload_profile():
     return redirect(url_for('index'))
 
 @app.route('/upload', methods=['POST'])
+@admin_required
 def upload():
     p = load_profile()
     file = request.files.get('image')
@@ -198,6 +288,7 @@ def upload():
     return redirect(url_for('index'))
 
 @app.route('/delete_image/<filename>', methods=['POST'])
+@admin_required
 def delete_image(filename):
     p = load_profile()
     safe = secure_filename(filename)
@@ -209,11 +300,13 @@ def delete_image(filename):
     return redirect(url_for('index'))
 
 @app.route('/archive')
+@login_required
 def archive():
     data = load_archive()
     return render_template('archive.html', files=data['files'])
 
 @app.route('/archive/upload', methods=['POST'])
+@admin_required
 def archive_upload():
     data = load_archive()
     file = request.files.get('file')
@@ -221,12 +314,8 @@ def archive_upload():
     category = request.form.get('category', '기타')
     desc     = request.form.get('desc', '').strip()
     if file and title and allowed_archive(file.filename):
-        filename = secure_filename(file.filename)
-        base, ext = os.path.splitext(filename)
-        i = 1
-        while os.path.exists(os.path.join(ARCHIVE_FOLDER, filename)):
-            filename = f'{base}_{i}{ext}'
-            i += 1
+        ext = file.filename.rsplit('.', 1)[1].lower() if '.' in file.filename else ''
+        filename = f"{uuid.uuid4().hex}.{ext}" if ext else uuid.uuid4().hex
         file.save(os.path.join(ARCHIVE_FOLDER, filename))
         data['files'].append({
             'filename': filename,
@@ -239,11 +328,25 @@ def archive_upload():
     return redirect(url_for('archive'))
 
 @app.route('/archive/download/<filename>')
+@login_required
 def archive_download(filename):
-    safe = secure_filename(filename)
-    return send_from_directory(os.path.abspath(ARCHIVE_FOLDER), safe, as_attachment=True)
+    data = load_archive()
+    entry = next((f for f in data['files'] if f['filename'] == filename), None)
+    if not entry:
+        return "파일을 찾을 수 없습니다.", 404
+    folder = os.path.abspath(ARCHIVE_FOLDER)
+    filepath = os.path.join(folder, filename)
+    if not os.path.abspath(filepath).startswith(folder + os.sep) and os.path.abspath(filepath) != folder:
+        return "잘못된 요청입니다.", 400
+    if not os.path.exists(filepath):
+        return "파일이 서버에 존재하지 않습니다.", 404
+    ext = filename.rsplit('.', 1)[-1] if '.' in filename else 'pdf'
+    safe_title = entry['title'].replace('/', '_').replace('\\', '_')
+    display_name = f"{safe_title}.{ext}"
+    return send_from_directory(folder, filename, as_attachment=True, download_name=display_name)
 
 @app.route('/archive/delete/<filename>', methods=['POST'])
+@admin_required
 def archive_delete(filename):
     data = load_archive()
     safe = secure_filename(filename)
@@ -255,10 +358,12 @@ def archive_delete(filename):
     return redirect(url_for('archive'))
 
 @app.route('/roadmap')
+@login_required
 def roadmap():
     return render_template('roadmap.html', steps=load_roadmap())
 
 @app.route('/roadmap/toggle/<step_id>/<node_id>', methods=['POST'])
+@admin_required
 def roadmap_toggle(step_id, node_id):
     data = load_roadmap()
     result = {'unlocked': False}
@@ -273,6 +378,7 @@ def roadmap_toggle(step_id, node_id):
     return jsonify(result)
 
 @app.route('/roadmap/update/<step_id>/<node_id>', methods=['POST'])
+@admin_required
 def roadmap_update(step_id, node_id):
     data = load_roadmap()
     body = request.get_json()
@@ -287,6 +393,7 @@ def roadmap_update(step_id, node_id):
     return jsonify({'ok': True})
 
 @app.route('/roadmap/add/<step_id>', methods=['POST'])
+@admin_required
 def roadmap_add(step_id):
     data = load_roadmap()
     body = request.get_json()
@@ -303,11 +410,13 @@ def roadmap_add(step_id):
     return jsonify({'ok': True, 'id': node_id})
 
 @app.route('/hof')
+@login_required
 def hof():
     data = load_hof()
     return render_template('hof.html', badges=data['badges'], icons=HOF_ICONS)
 
 @app.route('/hof/edit', methods=['GET', 'POST'])
+@admin_required
 def hof_edit():
     data = load_hof()
     if request.method == 'POST':
@@ -322,6 +431,193 @@ def hof_edit():
         save_hof(data)
         return redirect(url_for('hof'))
     return render_template('hof_edit.html', badges=data['badges'])
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if 'username' in session:
+        return redirect(url_for('index'))
+    error = None
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '')
+        if username == ADMIN_USERNAME and check_password_hash(ADMIN_PASSWORD_HASH, password):
+            session.clear()
+            session['username'] = 'rokta'
+            session['role'] = 'admin'
+            return redirect(url_for('index'))
+        error = '아이디 또는 비밀번호가 올바르지 않습니다.'
+    return render_template('login.html', error=error)
+
+@app.route('/guest-login')
+def guest_login():
+    session.clear()
+    session['username'] = 'guest'
+    session['role'] = 'guest'
+    return redirect(url_for('index'))
+
+@app.route('/guestbook')
+@login_required
+def guestbook():
+    if not os.path.exists(GUESTBOOK_PATH):
+        data = {'entries': []}
+        with open(GUESTBOOK_PATH, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+    with open(GUESTBOOK_PATH, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    return render_template('guestbook.html', entries=data['entries'])
+
+@app.route('/guestbook/write', methods=['POST'])
+@login_required
+def guestbook_write():
+    nickname = html.escape(request.form.get('nickname', '').strip())[:30]
+    content  = html.escape(request.form.get('content',  '').strip())[:300]
+    if not nickname or not content:
+        return redirect(url_for('guestbook'))
+    if not os.path.exists(GUESTBOOK_PATH):
+        data = {'entries': []}
+    else:
+        with open(GUESTBOOK_PATH, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+    now = datetime.now()
+    data['entries'].insert(0, {
+        'id':       uuid.uuid4().hex,
+        'nickname': nickname,
+        'content':  content,
+        'date':     now.strftime('%Y-%m-%d'),
+        'time':     now.strftime('%H:%M'),
+    })
+    with open(GUESTBOOK_PATH, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+    return redirect(url_for('guestbook'))
+
+@app.route('/guestbook/delete/<entry_id>', methods=['POST'])
+@admin_required
+def guestbook_delete(entry_id):
+    if not os.path.exists(GUESTBOOK_PATH):
+        return redirect(url_for('guestbook'))
+    with open(GUESTBOOK_PATH, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    data['entries'] = [e for e in data['entries'] if e['id'] != entry_id]
+    with open(GUESTBOOK_PATH, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+    return redirect(url_for('guestbook'))
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
+
+DASHBOARD_PATH = os.path.join('data', 'dashboard.json')
+
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    with open(DASHBOARD_PATH, 'r', encoding='utf-8') as f:
+        dash = json.load(f)
+    return render_template('dashboard.html', dash=dash)
+
+@app.route('/dashboard/delete-year', methods=['POST'])
+@admin_required
+def dashboard_delete_year():
+    body = request.get_json()
+    year = str(body.get('year', '')).strip()
+    with open(DASHBOARD_PATH, 'r', encoding='utf-8') as f:
+        dash = json.load(f)
+    if year not in dash['data']:
+        return jsonify({'error': 'not found'}), 404
+    dash['years'] = [y for y in dash['years'] if y != year]
+    del dash['data'][year]
+    with open(DASHBOARD_PATH, 'w', encoding='utf-8') as f:
+        json.dump(dash, f, ensure_ascii=False, indent=2)
+    return jsonify({'ok': True})
+
+@app.route('/dashboard/add-year', methods=['POST'])
+@admin_required
+def dashboard_add_year():
+    body = request.get_json()
+    year = str(body.get('year', '')).strip()
+    if not year or not year.isdigit() or len(year) != 4:
+        return jsonify({'error': 'invalid year'}), 400
+    with open(DASHBOARD_PATH, 'r', encoding='utf-8') as f:
+        dash = json.load(f)
+    if year in dash['data']:
+        return jsonify({'error': 'already exists'}), 409
+    dash['years'].append(year)
+    dash['years'].sort()
+    dash['data'][year] = {
+        ax['key']: {'exp': 0, 'max': 1000, 'level': 0, 'milestones': [], 'stats': {}}
+        for ax in dash['axes']
+    }
+    with open(DASHBOARD_PATH, 'w', encoding='utf-8') as f:
+        json.dump(dash, f, ensure_ascii=False, indent=2)
+    return jsonify({'ok': True, 'year': year})
+
+@app.route('/dashboard/update', methods=['POST'])
+@admin_required
+def dashboard_update():
+    body = request.get_json()
+    year = body.get('year', '')
+    key  = body.get('key', '')
+    with open(DASHBOARD_PATH, 'r', encoding='utf-8') as f:
+        dash = json.load(f)
+    if year not in dash['data'] or key not in dash['data'][year]:
+        return jsonify({'error': 'not found'}), 404
+    if 'milestones' in body:
+        dash['data'][year][key]['milestones'] = [m.strip() for m in body['milestones'] if m.strip()]
+    if 'stats' in body:
+        dash['data'][year][key]['stats'] = body['stats']
+    with open(DASHBOARD_PATH, 'w', encoding='utf-8') as f:
+        json.dump(dash, f, ensure_ascii=False, indent=2)
+    return jsonify({'ok': True})
+
+def load_works():
+    if not os.path.exists(WORKS_PATH):
+        return {'works': []}
+    with open(WORKS_PATH, 'r', encoding='utf-8') as f:
+        return json.load(f)
+
+def save_works(data):
+    with open(WORKS_PATH, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+@app.route('/works/data')
+@login_required
+def works_data():
+    return jsonify(load_works())
+
+@app.route('/works/upload', methods=['POST'])
+@admin_required
+def works_upload():
+    file  = request.files.get('file')
+    title = request.form.get('title', '').strip()
+    if not file or not title:
+        return jsonify({'error': 'missing fields'}), 400
+    ext = file.filename.rsplit('.', 1)[-1].lower() if '.' in file.filename else ''
+    if ext not in WORKS_EXTENSIONS:
+        return jsonify({'error': 'unsupported format'}), 400
+    wid      = uuid.uuid4().hex[:10]
+    filename = f'{wid}.{ext}'
+    file.save(os.path.join(WORKS_FOLDER, filename))
+    data = load_works()
+    data['works'].insert(0, {
+        'id': wid, 'title': title, 'filename': filename,
+        'ext': ext, 'date': date_obj.today().isoformat()
+    })
+    save_works(data)
+    return jsonify({'ok': True})
+
+@app.route('/works/delete/<wid>', methods=['POST'])
+@admin_required
+def works_delete(wid):
+    data = load_works()
+    entry = next((w for w in data['works'] if w['id'] == wid), None)
+    if entry:
+        path = os.path.join(WORKS_FOLDER, entry['filename'])
+        if os.path.exists(path):
+            os.remove(path)
+        data['works'] = [w for w in data['works'] if w['id'] != wid]
+        save_works(data)
+    return jsonify({'ok': True})
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)

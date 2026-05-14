@@ -1,0 +1,199 @@
+{
+  "years": [
+    "2025",
+    "2026"
+  ],
+  "axes": [
+    {
+      "key": "security",
+      "label": "SECURITY"
+    },
+    {
+      "key": "development",
+      "label": "DEVELOPMENT"
+    },
+    {
+      "key": "leadership",
+      "label": "LEADERSHIP"
+    },
+    {
+      "key": "research",
+      "label": "RESEARCH"
+    },
+    {
+      "key": "language",
+      "label": "LANGUAGE"
+    },
+    {
+      "key": "life_system",
+      "label": "LIFE SYSTEM"
+    }
+  ],
+  "data": {
+    "2025": {
+      "security": {
+        "exp": 680,
+        "max": 1000,
+        "level": 7,
+        "milestones": [
+          "KISA 암호 세미나 이수",
+          "CTF 3회 참가",
+          "XSS 취약점 분석 발표",
+          "SCA 스터디 운영"
+        ],
+        "stats": {
+          "CTF 참가": 3,
+          "세미나/컨퍼런스": 4,
+          "논문 리뷰": 2,
+          "분석 보고서": 2
+        }
+      },
+      "development": {
+        "exp": 340,
+        "max": 1000,
+        "level": 4,
+        "milestones": [
+          "NEXORIA_OS 개발",
+          "Crypto Toolkit 구현",
+          "Space Security Demo"
+        ],
+        "stats": {
+          "프로젝트": 3,
+          "구현": 5,
+          "아카이브 작성": 3
+        }
+      },
+      "leadership": {
+        "exp": 520,
+        "max": 1000,
+        "level": 6,
+        "milestones": [
+          "루비야랩 회장 취임",
+          "정기 스터디 운영 8회",
+          "워크샵 기획 2회"
+        ],
+        "stats": {
+          "운영 회의": 14,
+          "워크샵": 2,
+          "스터디": 8
+        }
+      },
+      "research": {
+        "exp": 380,
+        "max": 1000,
+        "level": 4,
+        "milestones": [
+          "DeFi 보안 연구",
+          "Diffie-Hellman TLS 분석",
+          "SCA 논문 정리"
+        ],
+        "stats": {
+          "논문": 5,
+          "아카이브": 4,
+          "블로그": 2
+        }
+      },
+      "language": {
+        "exp": 180,
+        "max": 1000,
+        "level": 2,
+        "milestones": [
+          "영어 발표 2회",
+          "영문 보고서 작성"
+        ],
+        "stats": {
+          "영어 발표": 2,
+          "영문 문서": 3
+        }
+      },
+      "life_system": {
+        "exp": 140,
+        "max": 1000,
+        "level": 2,
+        "milestones": [
+          "학습 루틴 정착"
+        ],
+        "stats": {
+          "루틴 구축": 1,
+          "회고": 2
+        }
+      }
+    },
+    "2026": {
+      "security": {
+        "exp": 290,
+        "max": 1000,
+        "level": 3,
+        "milestones": [
+          "CTF 참가 중",
+          "암호학 심화 스터디"
+        ],
+        "stats": {
+          "CTF 참가": 1,
+          "세미나": 2,
+          "논문 리뷰": 1
+        }
+      },
+      "development": {
+        "exp": 180,
+        "max": 1000,
+        "level": 2,
+        "milestones": [
+          "Dashboard 개발",
+          "사이트 고도화"
+        ],
+        "stats": {
+          "프로젝트": 2,
+          "구현": 3
+        }
+      },
+      "leadership": {
+        "exp": 260,
+        "max": 1000,
+        "level": 3,
+        "milestones": [
+          "루비야랩 운영 계속",
+          "신입 모집 기획"
+        ],
+        "stats": {
+          "운영 회의": 7,
+          "스터디": 4
+        }
+      },
+      "research": {
+        "exp": 150,
+        "max": 1000,
+        "level": 2,
+        "milestones": [
+          "연구 주제 탐색 중"
+        ],
+        "stats": {
+          "논문": 2,
+          "아카이브": 2
+        }
+      },
+      "language": {
+        "exp": 80,
+        "max": 1000,
+        "level": 1,
+        "milestones": [
+          "진행 중"
+        ],
+        "stats": {
+          "영문 문서": 1
+        }
+      },
+      "life_system": {
+        "exp": 90,
+        "max": 1000,
+        "level": 1,
+        "milestones": [
+          "루틴 재정비"
+        ],
+        "stats": {
+          "회고": 2
+        }
+      }
+    }
+  }
+}

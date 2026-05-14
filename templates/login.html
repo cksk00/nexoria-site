@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>login.exe — NEXORIA_OS</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <style>
+    body { overflow: hidden; }
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .login-wrap {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .login-brand {
+      font-family: var(--px);
+      font-size: 0.45rem;
+      color: var(--text-dim);
+      letter-spacing: 2px;
+      text-align: center;
+      margin-bottom: 14px;
+    }
+    .login-win { width: 300px; }
+    .login-error {
+      background: #fff3f3;
+      border: 1px solid #e88;
+      color: #b00;
+      font-size: 0.78rem;
+      padding: 7px 10px;
+      margin-bottom: 14px;
+      font-family: var(--body);
+    }
+    .login-choice {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .btn-choice {
+      font-family: var(--body);
+      font-size: 0.84rem;
+      font-weight: 700;
+      padding: 10px 0;
+      width: 100%;
+      text-align: center;
+      cursor: pointer;
+      border: 2px solid;
+      display: block;
+    }
+    .btn-admin {
+      background: #222;
+      color: #eee;
+      border-color: #444 #111 #111 #444;
+    }
+    .btn-admin:hover { background: #333; }
+    .btn-guest {
+      background: #e8e8e8;
+      color: var(--text-mid);
+      border-color: #eee #999 #999 #eee;
+      text-decoration: none;
+    }
+    .btn-guest:hover { background: #ddd; }
+    .login-form { display: none; margin-top: 14px; }
+    .login-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 10px;
+    }
+    .login-label {
+      font-family: var(--body);
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .login-input {
+      font-family: var(--body);
+      font-size: 0.84rem;
+      background: #fff;
+      border: 2px solid;
+      border-color: #888 #ccc #ccc #888;
+      color: var(--text);
+      padding: 7px 10px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .login-input:focus { outline: none; border-color: #555 #aaa #aaa #555; }
+    .login-form-btns { display: flex; gap: 6px; margin-top: 4px; }
+    .btn-cancel {
+      font-family: var(--body);
+      font-size: 0.8rem;
+      padding: 7px 0;
+      flex: 1;
+      background: #eee;
+      border: 2px solid;
+      border-color: #eee #aaa #aaa #eee;
+      color: var(--text-mid);
+      cursor: pointer;
+    }
+    .btn-cancel:hover { background: #e0e0e0; }
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 10px 0 4px;
+      color: var(--text-dim);
+      font-size: 0.72rem;
+      font-family: var(--body);
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      border-top: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<div class="login-wrap">
+  <div>
+    <p class="login-brand">[ NEXORIA_OS ]</p>
+    <div class="win login-win">
+      <div class="win-bar">
+        <span class="win-title">▣ login.exe</span>
+        <div class="win-btns">
+          <span class="win-btn">─</span><span class="win-btn">□</span><span class="win-btn red">×</span>
+        </div>
+      </div>
+      <div class="win-body">
+
+        {% if error %}
+        <div class="login-error">{{ error }}</div>
+        {% endif %}
+
+        <div class="login-choice" id="choice-panel">
+          <button class="btn-choice btn-admin" onclick="showForm()">admin으로 로그인</button>
+          <div class="divider">or</div>
+          <a href="/guest-login" class="btn-choice btn-guest">guest로 로그인</a>
+        </div>
+
+        <div class="login-form" id="login-form">
+          <form method="POST" action="/login">
+            <div class="login-field">
+              <label class="login-label">ID</label>
+              <input class="login-input" type="text" name="username" id="username-input" autocomplete="username">
+            </div>
+            <div class="login-field">
+              <label class="login-label">Password</label>
+              <input class="login-input" type="password" name="password" autocomplete="current-password">
+            </div>
+            <div class="login-form-btns">
+              <button class="btn-cancel" type="button" onclick="hideForm()">취소</button>
+              <button class="btn-px" type="submit" style="flex:2;">로그인</button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showForm() {
+    document.getElementById('choice-panel').style.display = 'none';
+    const form = document.getElementById('login-form');
+    form.style.display = 'block';
+    document.getElementById('username-input').focus();
+  }
+  function hideForm() {
+    document.getElementById('login-form').style.display = 'none';
+    document.getElementById('choice-panel').style.display = 'flex';
+  }
+  {% if error %}
+  showForm();
+  {% endif %}
+
+  /* ── pixel background ── */
+  (function() {
+    const canvas = document.getElementById('bg-canvas');
+    const ctx    = canvas.getContext('2d');
+    const COLORS = ['#ffb3c6','#d4a8e8','#a8d8e8','#b8e8c8','#ffe0a8','#ffffff'];
+    const PX = 3;
+
+    function resize() {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const N = 55;
+    const stars = Array.from({length: N}, () => ({
+      x:     Math.random() * window.innerWidth,
+      y:     Math.random() * window.innerHeight,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      phase: Math.random() * Math.PI * 2,
+      speed: 0.4 + Math.random() * 0.8,
+      type:  Math.random() < 0.4 ? 'heart' : 'star',
+      vy:    (Math.random() - 0.5) * 0.15,
+      vx:    (Math.random() - 0.5) * 0.1,
+    }));
+
+    function drawStar(x, y, color, alpha) {
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle   = color;
+      const p = PX;
+      // + 십자 픽셀 별
+      ctx.fillRect(x,     y - p, p, p);
+      ctx.fillRect(x,     y + p, p, p);
+      ctx.fillRect(x - p, y,     p, p);
+      ctx.fillRect(x + p, y,     p, p);
+      ctx.fillRect(x,     y,     p, p);
+      // 대각 꼭짓점 (더 작게)
+      ctx.globalAlpha = alpha * 0.45;
+      ctx.fillRect(x - p, y - p, p, p);
+      ctx.fillRect(x + p, y - p, p, p);
+      ctx.fillRect(x - p, y + p, p, p);
+      ctx.fillRect(x + p, y + p, p, p);
+    }
+
+    function drawHeart(x, y, color, alpha) {
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle   = color;
+      const p = PX;
+      // 픽셀 하트
+      ctx.fillRect(x - p, y - p, p, p);
+      ctx.fillRect(x + p, y - p, p, p);
+      ctx.fillRect(x - 2*p, y, p, p);
+      ctx.fillRect(x - p,   y, p, p);
+      ctx.fillRect(x,       y, p, p);
+      ctx.fillRect(x + p,   y, p, p);
+      ctx.fillRect(x + 2*p, y, p, p);
+      ctx.fillRect(x - p,   y + p, p, p);
+      ctx.fillRect(x,       y + p, p, p);
+      ctx.fillRect(x + p,   y + p, p, p);
+      ctx.fillRect(x,       y + 2*p, p, p);
+    }
+
+    let last = 0;
+    function frame(ts) {
+      const dt = ts - last; last = ts;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      stars.forEach(s => {
+        s.phase += s.speed * 0.02;
+        s.x     += s.vx;
+        s.y     += s.vy;
+        if (s.x < -20) s.x = canvas.width + 20;
+        if (s.x > canvas.width + 20) s.x = -20;
+        if (s.y < -20) s.y = canvas.height + 20;
+        if (s.y > canvas.height + 20) s.y = -20;
+
+        const alpha = 0.25 + 0.55 * (0.5 + 0.5 * Math.sin(s.phase));
+        if (s.type === 'heart') drawHeart(s.x, s.y, s.color, alpha);
+        else                    drawStar (s.x, s.y, s.color, alpha);
+      });
+
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  })();
+</script>
+</body>
+</html>

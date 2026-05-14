@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guestbook — NEXORIA_OS</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <style>
+    .gb-wrap {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    /* 작성 폼 */
+    .gb-form-grid {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .gb-label {
+      font-family: var(--body);
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .gb-input, .gb-textarea {
+      font-family: var(--body);
+      font-size: 0.84rem;
+      background: #fff;
+      border: 2px solid;
+      border-color: #aaa #ddd #ddd #aaa;
+      color: var(--text);
+      padding: 7px 10px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .gb-input:focus, .gb-textarea:focus {
+      outline: none;
+      border-color: #777 #ccc #ccc #777;
+    }
+    .gb-textarea {
+      resize: vertical;
+      min-height: 80px;
+      line-height: 1.55;
+    }
+    .gb-submit-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 2px;
+    }
+
+    /* 엔트리 목록 */
+    .gb-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      margin-top: 4px;
+    }
+    .gb-entry {
+      background: #fafafa;
+      border: 1px solid #ebebeb;
+      padding: 12px 14px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .gb-entry:hover { background: #f5f5f5; }
+    .gb-avatar {
+      width: 34px;
+      height: 34px;
+      flex-shrink: 0;
+      background: #e8e8e8;
+      border: 1px solid #d0d0d0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-family: var(--px);
+      color: #888;
+      user-select: none;
+    }
+    .gb-body { flex: 1; min-width: 0; }
+    .gb-meta {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 5px;
+    }
+    .gb-nick {
+      font-family: var(--body);
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .gb-date {
+      font-family: var(--body);
+      font-size: 0.7rem;
+      color: var(--text-dim);
+    }
+    .gb-content {
+      font-family: var(--body);
+      font-size: 0.84rem;
+      color: #444;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .gb-del-btn {
+      font-family: var(--body);
+      font-size: 0.7rem;
+      background: transparent;
+      border: 1px solid #ddd;
+      color: #bbb;
+      padding: 2px 7px;
+      cursor: pointer;
+      flex-shrink: 0;
+      align-self: flex-start;
+      margin-top: 2px;
+    }
+    .gb-del-btn:hover { border-color: #aaa; color: #777; }
+
+    .gb-empty {
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.84rem;
+      padding: 36px 0;
+      font-family: var(--body);
+    }
+    .gb-count {
+      font-family: var(--body);
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<nav id="topnav">
+  <a href="/" class="nav-brand">[NEXORIA_OS]</a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/hof">Hall of Fame</a>
+    <a href="/roadmap">Roadmap</a>
+    <a href="/archive">Archive</a>
+    <a href="/guestbook" class="active">Guestbook</a>
+    <a href="/dashboard">Dashboard</a>
+    {% if is_admin %}<a href="/edit">✏ Edit</a>{% endif %}
+  </div>
+</nav>
+
+<div id="desktop" style="display:block; padding:14px 14px 60px;">
+  <div class="gb-wrap">
+
+    <!-- 작성 폼 -->
+    <div class="win" style="margin-bottom:14px;">
+      <div class="win-bar">
+        <span class="win-title">▣ write.exe</span>
+        <div class="win-btns">
+          <span class="win-btn">─</span><span class="win-btn">□</span><span class="win-btn red">×</span>
+        </div>
+      </div>
+      <div class="win-body">
+        <form method="POST" action="/guestbook/write">
+          <div class="gb-form-grid">
+            <div>
+              <p class="gb-label">Nickname</p>
+              <input class="gb-input" type="text" name="nickname"
+                     placeholder="닉네임 (최대 30자)" maxlength="30" required>
+            </div>
+            <div>
+              <p class="gb-label">Message</p>
+              <textarea class="gb-textarea" name="content"
+                        placeholder="남기고 싶은 말을 적어주세요 (최대 300자)"
+                        maxlength="300" required></textarea>
+            </div>
+          </div>
+          <div class="gb-submit-row">
+            <button class="btn-px" type="submit">남기기</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- 글 목록 -->
+    <div class="win">
+      <div class="win-bar">
+        <span class="win-title">▣ guestbook.exe</span>
+        <div class="win-btns">
+          <span class="win-btn">─</span><span class="win-btn">□</span><span class="win-btn red">×</span>
+        </div>
+      </div>
+      <div class="win-body">
+        {% if entries %}
+        <p class="gb-count">{{ entries|length }}개의 메시지</p>
+        <div class="gb-list">
+          {% for e in entries %}
+          <div class="gb-entry">
+            <div class="gb-avatar">{{ e.nickname[0]|upper }}</div>
+            <div class="gb-body">
+              <div class="gb-meta">
+                <span class="gb-nick">{{ e.nickname }}</span>
+                <span class="gb-date">{{ e.date }} {{ e.time }}</span>
+              </div>
+              <div class="gb-content">{{ e.content }}</div>
+            </div>
+            {% if is_admin %}
+            <form method="POST" action="/guestbook/delete/{{ e.id }}" style="margin:0;">
+              <button class="gb-del-btn" type="submit" onclick="return confirm('삭제할까요?')">✕</button>
+            </form>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p class="gb-empty">아직 메시지가 없어요. 첫 번째로 남겨보세요!</p>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="taskbar">
+  <div class="taskbar-clock" id="clock"></div>
+</div>
+
+<script>
+  function tick() {
+    const now = new Date();
+    document.getElementById('clock').textContent =
+      String(now.getHours()).padStart(2,'0') + ':' +
+      String(now.getMinutes()).padStart(2,'0');
+  }
+  tick(); setInterval(tick, 10000);
+</script>
+</body>
+</html>

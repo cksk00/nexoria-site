@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — NEXORIA_OS</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <style>
+    body { background: #0a0a0a; }
+
+    /* ── Page wrapper ── */
+    .dash-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 72px 24px 80px;
+    }
+
+    /* ── Header ── */
+    .dash-hero {
+      text-align: center;
+      padding: 0 0 40px;
+      margin-bottom: 40px;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    .dash-eyebrow {
+      font-family: var(--px);
+      font-size: 0.38rem;
+      color: #444;
+      letter-spacing: 2px;
+      margin-bottom: 14px;
+      transform: scaleY(1.13);
+      display: block;
+    }
+    .dash-title {
+      font-family: var(--px);
+      font-size: 1.1rem;
+      color: #c8c8c8;
+      letter-spacing: 4px;
+      margin-bottom: 14px;
+      text-shadow: 0 0 24px rgba(200,200,200,0.18);
+      transform: scaleY(1.13);
+      display: block;
+    }
+    .dash-sub {
+      font-family: var(--body);
+      font-size: 0.78rem;
+      color: #383838;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── Year selector ── */
+    .year-selector {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 48px;
+    }
+    .yr-btn {
+      font-family: var(--px);
+      font-size: 0.55rem;
+      padding: 8px 22px;
+      background: #0d0d0d;
+      border: 1px solid #252525;
+      color: #555;
+      cursor: pointer;
+      letter-spacing: 2px;
+      transition: all 0.2s;
+      transform: scaleY(1.1);
+    }
+    .yr-btn:hover { border-color: #aaa; color: #aaa; }
+    .yr-btn.active {
+      border-color: #c8c8c8;
+      color: #c8c8c8;
+      background: #111;
+      box-shadow: 0 0 12px rgba(200,200,200,0.08);
+    }
+    .yr-wrap { display: inline-flex; align-items: center; }
+    .yr-add-btn {
+      font-family: var(--px);
+      font-size: 0.80rem;
+      padding: 6px 16px;
+      background: #0d0d0d;
+      border: 1px solid #252525;
+      color: #555;
+      cursor: pointer;
+      letter-spacing: 2px;
+      transform: scaleY(1.1);
+    }
+    .yr-add-btn:hover { color: #c8c8c8; border-color: #666; }
+    .yr-input {
+      font-family: var(--px);
+      font-size: 0.55rem;
+      background: #0d0d0d;
+      border: 1px solid #252525;
+      color: #c8c8c8;
+      padding: 8px 12px;
+      width: 72px;
+      letter-spacing: 2px;
+      transform: scaleY(1.1);
+      outline: none;
+    }
+
+    /* ── Main layout ── */
+    .dash-body {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 32px;
+      align-items: start;
+    }
+
+    /* ── Hex container ── */
+    .hex-container {
+      position: relative;
+      background: #080808;
+      border: 1px solid #1e1e1e;
+      padding: 20px;
+    }
+    .hex-container::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 3px,
+        rgba(0,0,0,0.18) 3px, rgba(0,0,0,0.18) 4px
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+    #hex-svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ── Info panel ── */
+    .info-panel {
+      background: #080808;
+      border: 1px solid #1e1e1e;
+      padding: 24px;
+      min-height: 400px;
+      font-family: var(--px);
+    }
+    .info-default {
+      color: #333;
+      font-size: 0.43rem;
+      letter-spacing: 1px;
+      line-height: 2.2;
+    }
+    .info-axis { display: none; }
+    .info-axis.active { display: block; }
+
+    .info-label {
+      font-size: 0.50rem;
+      color: #c8c8c8;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #1e1e1e;
+      text-shadow: 0 0 8px rgba(200,200,200,0.15);
+    }
+    .info-exp-bar-wrap {
+      margin-bottom: 20px;
+    }
+    .info-exp-label {
+      font-size: 0.40rem;
+      color: #555;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .info-exp-track {
+      width: 100%;
+      height: 6px;
+      background: #141414;
+      border: 1px solid #1e1e1e;
+    }
+    .info-exp-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #333, #c8c8c8);
+      box-shadow: 0 0 8px rgba(200,200,200,0.12);
+      transition: width 0.8s ease;
+    }
+    .info-level {
+      font-size: 0.63rem;
+      color: #c8c8c8;
+      letter-spacing: 2px;
+      margin-bottom: 18px;
+    }
+    .info-section-title {
+      font-size: 0.38rem;
+      color: #555;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+    }
+    .info-milestones {
+      list-style: none;
+      margin-bottom: 20px;
+    }
+    .info-milestones li {
+      font-family: var(--body);
+      font-size: 0.68rem;
+      color: #888;
+      letter-spacing: 0.2px;
+      padding: 5px 0;
+      border-bottom: 1px solid #161616;
+      line-height: 1.7;
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+    .info-milestones li::before { content: '▸ '; color: #aaa; font-family: var(--body); }
+    .info-milestones li.ms-editing::before { content: ''; }
+    .ms-text { flex: 1; }
+    .ms-btns { display: flex; gap: 3px; flex-shrink: 0; }
+    .ms-btn {
+      font-family: var(--px);
+      font-size: 0.60rem;
+      background: transparent;
+      border: 1px solid #252525;
+      color: #444;
+      padding: 0;
+      width: 22px;
+      height: 22px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      vertical-align: middle;
+    }
+    .ms-btn:hover { color: #c8c8c8; border-color: #666; }
+    .ms-input {
+      font-family: var(--body);
+      font-size: 0.84rem;
+      background: #111;
+      border: 1px solid #333;
+      color: #c8c8c8;
+      padding: 2px 6px;
+      flex: 1;
+      min-width: 0;
+    }
+    .ms-add-row { border-bottom: none !important; padding-top: 8px !important; }
+    .ms-add-btn {
+      font-family: var(--px);
+      font-size: 0.60rem;
+      background: transparent;
+      border: 1px solid #252525;
+      color: #555;
+      padding: 0 12px;
+      height: 22px;
+      cursor: pointer;
+      letter-spacing: 1px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ms-add-btn:hover { color: #c8c8c8; border-color: #666; }
+
+    .info-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .info-stat-row {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      font-family: var(--body);
+      font-size: 0.74rem;
+      color: #555;
+      letter-spacing: 0.2px;
+      padding: 4px 0;
+      border-bottom: 1px solid #161616;
+      gap: 10px;
+    }
+    .info-stat-val { color: #555; }
+    .stat-btns { margin-left: auto; display: flex; gap: 3px; }
+    .stat-key-input, .stat-val-input {
+      font-family: var(--body);
+      font-size: 0.82rem;
+      background: #111;
+      border: 1px solid #333;
+      color: #c8c8c8;
+      padding: 2px 6px;
+    }
+    .stat-key-input { flex: 1; min-width: 0; }
+    .stat-val-input { width: 52px; }
+    .stat-add-row { border-bottom: none !important; padding-top: 8px !important; }
+
+    /* ── Legend ── */
+    .dash-legend {
+      margin-top: 32px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .legend-item {
+      background: #080808;
+      border: 1px solid #1e1e1e;
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .legend-item:hover,
+    .legend-item.hovered {
+      border-color: #aaa;
+      background: #111;
+    }
+    .legend-key {
+      font-family: var(--px);
+      font-size: 0.38rem;
+      color: #c8c8c8;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+    .legend-bar-track {
+      width: 100%;
+      height: 3px;
+      background: #141414;
+      margin-top: 6px;
+    }
+    .legend-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #333, #c8c8c8);
+      transition: width 0.8s ease;
+    }
+    .legend-exp {
+      font-family: var(--px);
+      font-size: 0.36rem;
+      color: #555;
+      margin-top: 4px;
+      letter-spacing: 1px;
+    }
+
+    @media (max-width: 800px) {
+      .dash-body { grid-template-columns: 1fr; }
+      .dash-legend { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<nav id="topnav">
+  <a href="/" class="nav-brand">[NEXORIA_OS]</a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/hof">Hall of Fame</a>
+    <a href="/roadmap">Roadmap</a>
+    <a href="/archive">Archive</a>
+    <a href="/guestbook">Guestbook</a>
+    <a href="/dashboard" class="active">Dashboard</a>
+    {% if is_admin %}<a href="/edit">✏ Edit</a>{% endif %}
+  </div>
+</nav>
+
+<div class="dash-wrap">
+
+  <div class="dash-hero">
+    <span class="dash-eyebrow">[ NEXORIA_OS :: GROWTH.LOG ]</span>
+    <span class="dash-title">OPERATOR PROGRESSION</span>
+    <p class="dash-sub">════*.·:·.✧ Tracking Growth Across All Vectors ✧.·:·.*════</p>
+  </div>
+
+  <div class="year-selector" id="year-selector">
+    {% for yr in dash.years %}
+    <span class="yr-wrap" data-year="{{ yr }}">
+      <button class="yr-btn {% if loop.first %}active{% endif %}" data-year="{{ yr }}">{{ yr }}</button>
+    </span>
+    {% endfor %}
+    {% if is_admin %}
+    <button class="yr-add-btn" id="add-year-btn" onclick="showAddYear()">＋</button>
+    <span id="add-year-form" style="display:none; gap:6px; align-items:center;">
+      <input class="yr-input" id="yr-input" type="text" placeholder="YYYY" maxlength="4"
+             onkeydown="if(event.key==='Enter')confirmAddYear()">
+      <button class="yr-btn" onclick="confirmAddYear()">✔</button>
+      <button class="yr-btn" onclick="hideAddYear()">✕</button>
+    </span>
+    {% endif %}
+  </div>
+
+  <div class="dash-body">
+
+    <!-- Hex visualization -->
+    <div>
+      <div class="hex-container">
+        <svg id="hex-svg" viewBox="0 0 520 520">
+          <defs>
+            <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="5" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <filter id="glow-strong" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="9" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+
+          <!-- Grid rings -->
+          <g id="grid-rings"></g>
+          <!-- Axis lines -->
+          <g id="axis-lines"></g>
+          <!-- Data polygon -->
+          <path id="hex-fill" fill="rgba(200,200,200,0.06)" stroke="none"/>
+          <path id="hex-stroke" fill="none" stroke="#c8c8c8" stroke-width="1.5" filter="url(#glow)"/>
+          <!-- Vertex dots -->
+          <g id="hex-dots"></g>
+          <!-- Axis labels -->
+          <g id="axis-labels"></g>
+        </svg>
+      </div>
+
+      <!-- Legend grid -->
+      <div class="dash-legend" id="legend-grid"></div>
+    </div>
+
+    <!-- Info panel -->
+    <div class="info-panel">
+      <div class="info-default" id="info-default">
+        &gt; SELECT AN AXIS<br>
+        &gt; TO VIEW DETAILS<br><br>
+        &gt; HOVER OVER<br>
+        &gt; VERTEX NODES<br><br>
+        &gt; OR CLICK LEGEND<br>
+        &gt; CARDS BELOW
+      </div>
+      {% for ax in dash.axes %}
+      <div class="info-axis" id="info-{{ ax.key }}">
+        <div class="info-label">{{ ax.label }}</div>
+        <div class="info-level" id="lv-{{ ax.key }}">LV.--</div>
+        <div class="info-exp-bar-wrap">
+          <div class="info-exp-label">
+            <span>EXP</span>
+            <span id="exp-num-{{ ax.key }}">--- / 1000</span>
+          </div>
+          <div class="info-exp-track">
+            <div class="info-exp-fill" id="exp-fill-{{ ax.key }}" style="width:0%"></div>
+          </div>
+        </div>
+        <div class="info-section-title">MILESTONES</div>
+        <ul class="info-milestones" id="ms-{{ ax.key }}"></ul>
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</div>
+
+<script>
+const DASH_DATA = {{ dash.data | tojson }};
+const AXES = {{ dash.axes | tojson }};
+const YEARS = {{ dash.years | tojson }};
+
+const CX = 260, CY = 260, MAX_R = 190, RINGS = 5;
+
+const ANGLES = [-90, -30, 30, 90, 150, 210];
+
+function rad(deg) { return deg * Math.PI / 180; }
+function pt(angle, r) {
+  return [CX + r * Math.cos(rad(angle)), CY + r * Math.sin(rad(angle))];
+}
+function toPath(pts) {
+  return pts.map((p, i) => `${i ? 'L' : 'M'}${p[0].toFixed(2)},${p[1].toFixed(2)}`).join(' ') + 'Z';
+}
+
+// ── Build static SVG elements ──────────────────
+function buildGrid() {
+  const rings = document.getElementById('grid-rings');
+  const lines = document.getElementById('axis-lines');
+  const labels = document.getElementById('axis-labels');
+
+  // rings
+  for (let r = 1; r <= RINGS; r++) {
+    const radius = (r / RINGS) * MAX_R;
+    const pts = ANGLES.map(a => pt(a, radius));
+    const el = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+    el.setAttribute('points', pts.map(p => p.join(',')).join(' '));
+    el.setAttribute('fill', 'none');
+    el.setAttribute('stroke', r === RINGS ? '#1e1e1e' : '#141414');
+    el.setAttribute('stroke-width', r === RINGS ? '1' : '0.5');
+    rings.appendChild(el);
+  }
+
+  // axis lines + labels
+  AXES.forEach((ax, i) => {
+    const tip = pt(ANGLES[i], MAX_R);
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', CX); line.setAttribute('y1', CY);
+    line.setAttribute('x2', tip[0]); line.setAttribute('y2', tip[1]);
+    line.setAttribute('stroke', '#1a1a1a'); line.setAttribute('stroke-width', '0.8');
+    lines.appendChild(line);
+
+    // label position (slightly beyond max radius)
+    const labelR = MAX_R + 32;
+    const lp = pt(ANGLES[i], labelR);
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', lp[0]);
+    text.setAttribute('y', lp[1]);
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('dominant-baseline', 'middle');
+    text.setAttribute('font-family', "'Press Start 2P', monospace");
+    text.setAttribute('font-size', '9');
+    text.setAttribute('fill', '#555');
+    text.setAttribute('letter-spacing', '0.5');
+    text.setAttribute('style', 'cursor:pointer');
+    text.textContent = ax.label;
+    text.dataset.key = ax.key;
+    text.addEventListener('click', () => showInfo(ax.key));
+    labels.appendChild(text);
+  });
+}
+
+// ── Animate hexagon ────────────────────────────
+let current = [0, 0, 0, 0, 0, 0];
+let target  = [0, 0, 0, 0, 0, 0];
+let rafId   = null;
+let activeYear = YEARS[0];
+
+function setYear(year) {
+  activeYear = year;
+  const d = DASH_DATA[year];
+  target = AXES.map(ax => (d[ax.key].exp / d[ax.key].max) * MAX_R);
+  if (!rafId) rafId = requestAnimationFrame(tick);
+
+  // update legend bars
+  AXES.forEach(ax => {
+    const fill = document.getElementById(`leg-fill-${ax.key}`);
+    const exp  = document.getElementById(`leg-exp-${ax.key}`);
+    if (fill) fill.style.width = ((d[ax.key].exp / d[ax.key].max) * 100) + '%';
+    if (exp)  exp.textContent  = `EXP ${d[ax.key].exp}`;
+  });
+
+  // refresh open info panel
+  if (openAxis) showInfo(openAxis);
+}
+
+function tick() {
+  let done = true;
+  current = current.map((v, i) => {
+    const diff = target[i] - v;
+    if (Math.abs(diff) > 0.3) done = false;
+    return v + diff * 0.09;
+  });
+
+  const pts = AXES.map((_, i) => pt(ANGLES[i], current[i]));
+  const path = toPath(pts);
+
+  document.getElementById('hex-fill').setAttribute('d', path);
+  document.getElementById('hex-stroke').setAttribute('d', path);
+
+  // dots
+  const dotsG = document.getElementById('hex-dots');
+  dotsG.innerHTML = '';
+  pts.forEach((p, i) => {
+    const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    c.setAttribute('cx', p[0]); c.setAttribute('cy', p[1]); c.setAttribute('r', '4');
+    c.setAttribute('fill', '#c8c8c8');
+    c.setAttribute('filter', 'url(#glow-strong)');
+    c.setAttribute('style', 'cursor:pointer');
+    c.dataset.key = AXES[i].key;
+    c.addEventListener('mouseenter', () => { showInfo(AXES[i].key); highlightLegend(AXES[i].key); });
+    c.addEventListener('mouseleave', () => clearLegendHighlight());
+    dotsG.appendChild(c);
+  });
+
+  if (done) { rafId = null; }
+  else rafId = requestAnimationFrame(tick);
+}
+
+const IS_ADMIN = {{ 'true' if is_admin else 'false' }};
+
+// ── Info panel ─────────────────────────────────
+let openAxis = null;
+
+function showInfo(key) {
+  openAxis = key;
+  document.getElementById('info-default').style.display = 'none';
+  document.querySelectorAll('.info-axis').forEach(el => el.classList.remove('active'));
+  document.getElementById(`info-${key}`).classList.add('active');
+
+  const d = DASH_DATA[activeYear][key];
+  document.getElementById(`lv-${key}`).textContent = `LV.${String(d.level).padStart(2, '0')}`;
+  document.getElementById(`exp-num-${key}`).textContent = `${d.exp} / ${d.max}`;
+  document.getElementById(`exp-fill-${key}`).style.width = `${(d.exp / d.max) * 100}%`;
+
+  renderMilestones(key);
+}
+
+function renderMilestones(key) {
+  const d = DASH_DATA[activeYear][key];
+  const ms = document.getElementById(`ms-${key}`);
+  let html = d.milestones.length
+    ? d.milestones.map((m, i) => `
+        <li>
+          <span class="ms-text">${escHtml(m)}</span>
+          ${IS_ADMIN ? `<span class="ms-btns">
+            <button class="ms-btn" onclick="startEditMs('${key}',${i})">✎</button>
+            <button class="ms-btn" onclick="deleteMs('${key}',${i})">✕</button>
+          </span>` : ''}
+        </li>`).join('')
+    : '<li style="color:#333;font-family:var(--body)">— 기록 없음</li>';
+  if (IS_ADMIN) html += `<li class="ms-add-row"><button class="ms-add-btn" onclick="addMs('${key}')">＋ 추가</button></li>`;
+  ms.innerHTML = html;
+}
+
+function startEditMs(key, i) {
+  const ms = document.getElementById(`ms-${key}`);
+  const li = ms.querySelectorAll('li:not(.ms-add-row)')[i];
+  const val = DASH_DATA[activeYear][key].milestones[i];
+  li.classList.add('ms-editing');
+  li.innerHTML = `
+    <input class="ms-input" value="${escHtml(val)}">
+    <span class="ms-btns">
+      <button class="ms-btn" onclick="saveMs('${key}',${i},this)">✔</button>
+      <button class="ms-btn" onclick="renderMilestones('${key}')">✕</button>
+    </span>`;
+  li.querySelector('.ms-input').focus();
+}
+
+function saveMs(key, i, btn) {
+  const input = btn.closest('li').querySelector('.ms-input');
+  const val = input.value.trim();
+  if (!val) return;
+  DASH_DATA[activeYear][key].milestones[i] = val;
+  saveToDash(key);
+  renderMilestones(key);
+}
+
+function deleteMs(key, i) {
+  DASH_DATA[activeYear][key].milestones.splice(i, 1);
+  saveToDash(key);
+  renderMilestones(key);
+}
+
+function addMs(key) {
+  const ms = document.getElementById(`ms-${key}`);
+  const addRow = ms.querySelector('.ms-add-row');
+  const li = document.createElement('li');
+  li.classList.add('ms-editing');
+  li.innerHTML = `
+    <input class="ms-input" placeholder="새 마일스톤">
+    <span class="ms-btns">
+      <button class="ms-btn" onclick="confirmAddMs('${key}',this)">✔</button>
+      <button class="ms-btn" onclick="this.closest('li').remove()">✕</button>
+    </span>`;
+  ms.insertBefore(li, addRow);
+  li.querySelector('.ms-input').focus();
+}
+
+function confirmAddMs(key, btn) {
+  const input = btn.closest('li').querySelector('.ms-input');
+  const val = input.value.trim();
+  if (!val) return;
+  DASH_DATA[activeYear][key].milestones.push(val);
+  saveToDash(key);
+  renderMilestones(key);
+}
+
+async function saveToDash(key) {
+  const d = DASH_DATA[activeYear][key];
+  await fetch('/dashboard/update', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ year: activeYear, key, milestones: d.milestones })
+  });
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function highlightLegend(key) {
+  document.querySelectorAll('.legend-item').forEach(el => {
+    el.classList.toggle('hovered', el.dataset.key === key);
+  });
+}
+function clearLegendHighlight() {
+  document.querySelectorAll('.legend-item').forEach(el => el.classList.remove('hovered'));
+}
+
+// ── Build legend ───────────────────────────────
+function buildLegend() {
+  const grid = document.getElementById('legend-grid');
+  AXES.forEach(ax => {
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+    item.dataset.key = ax.key;
+    item.innerHTML = `
+      <div class="legend-key">${ax.label}</div>
+      <div class="legend-bar-track"><div class="legend-bar-fill" id="leg-fill-${ax.key}" style="width:0%"></div></div>
+      <div class="legend-exp" id="leg-exp-${ax.key}">EXP 0</div>
+    `;
+    item.addEventListener('click', () => { showInfo(ax.key); highlightLegend(ax.key); });
+    grid.appendChild(item);
+  });
+}
+
+// ── Year buttons ───────────────────────────────
+function bindYrBtn(btn) {
+  btn.addEventListener('click', () => {
+    if (!btn.dataset.year) return;
+    document.querySelectorAll('.yr-btn[data-year]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    setYear(btn.dataset.year);
+  });
+}
+document.querySelectorAll('.yr-btn[data-year]').forEach(bindYrBtn);
+
+
+function showAddYear() {
+  const form = document.getElementById('add-year-form');
+  form.style.display = 'inline-flex';
+  document.getElementById('add-year-btn').style.display = 'none';
+  document.getElementById('yr-input').focus();
+}
+function hideAddYear() {
+  document.getElementById('add-year-form').style.display = 'none';
+  document.getElementById('add-year-btn').style.display = '';
+  document.getElementById('yr-input').value = '';
+}
+async function confirmAddYear() {
+  const year = document.getElementById('yr-input').value.trim();
+  if (!/^\d{4}$/.test(year)) return;
+  const res = await fetch('/dashboard/add-year', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ year })
+  });
+  const data = await res.json();
+  if (!data.ok) { alert(data.error); return; }
+
+  DASH_DATA[year] = {};
+  AXES.forEach(ax => {
+    DASH_DATA[year][ax.key] = { exp: 0, max: 1000, level: 0, milestones: [], stats: {} };
+  });
+  YEARS.push(year); YEARS.sort();
+
+  const sel = document.getElementById('year-selector');
+  const addBtn = document.getElementById('add-year-btn');
+  const wrap = document.createElement('span');
+  wrap.className = 'yr-wrap';
+  wrap.dataset.year = year;
+  const btn = document.createElement('button');
+  btn.className = 'yr-btn';
+  btn.dataset.year = year;
+  btn.textContent = year;
+  bindYrBtn(btn);
+  wrap.appendChild(btn);
+  sel.insertBefore(wrap, addBtn);
+
+  hideAddYear();
+  btn.click();
+}
+
+// ── Init ───────────────────────────────────────
+buildGrid();
+buildLegend();
+setYear(YEARS[0]);
+</script>
+
+</body>
+</html>

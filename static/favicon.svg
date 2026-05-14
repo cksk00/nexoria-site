@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Background -->
+  <rect width="32" height="32" rx="4" fill="#080808"/>
+
+  <!-- Monitor frame -->
+  <rect x="3" y="3" width="26" height="19" rx="2" fill="#1a1a1a" stroke="#c8c8c8" stroke-width="1"/>
+  <!-- Screen -->
+  <rect x="5" y="5" width="22" height="15" fill="#080808"/>
+
+  <!-- Pixel "N" on screen -->
+  <rect x="7" y="7" width="2" height="9" fill="#c8c8c8"/>
+  <rect x="9" y="9" width="2" height="2" fill="#c8c8c8"/>
+  <rect x="11" y="11" width="2" height="2" fill="#c8c8c8"/>
+  <rect x="13" y="7" width="2" height="9" fill="#c8c8c8"/>
+
+  <!-- Pixel "X" on screen -->
+  <rect x="17" y="7" width="2" height="2" fill="#c8c8c8"/>
+  <rect x="21" y="7" width="2" height="2" fill="#c8c8c8"/>
+  <rect x="19" y="9" width="2" height="2" fill="#c8c8c8"/>
+  <rect x="17" y="11" width="2" height="2" fill="#c8c8c8"/>
+  <rect x="21" y="11" width="2" height="2" fill="#c8c8c8"/>
+
+  <!-- Monitor stand neck -->
+  <rect x="14" y="22" width="4" height="3" fill="#1a1a1a" stroke="#c8c8c8" stroke-width="0.5"/>
+  <!-- Monitor base -->
+  <rect x="10" y="25" width="12" height="2" rx="1" fill="#1a1a1a" stroke="#c8c8c8" stroke-width="0.5"/>
+
+  <!-- Status light -->
+  <circle cx="16" cy="20.5" r="0.8" fill="#c8c8c8" opacity="0.6"/>
+</svg>
